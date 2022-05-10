@@ -29,6 +29,8 @@ public class AdminHandler {
     TagService tagService;
     @Resource
     LinkService linkService;
+    @Resource
+    WebSiteConfigService webSiteConfigService;
 
     @PostMapping("/login")
     public String login(AdminLoginData loginData, HttpSession session) {
@@ -96,9 +98,16 @@ public class AdminHandler {
     }
 
     @GetMapping("/configurations")
-    public String configurations(Model model) {
+    public String configurations(HttpSession session, Model model) {
         model.addAttribute("path", "admin/links");
+        webSiteConfigService.setConfigMessage(session, model);
         return "admin/configuration";
+    }
+
+    @GetMapping("/blogs/edit")
+    public String blogEdit(Model model) {
+        model.addAttribute("path", "admin/blogs/edit");
+        return "admin/edit";
     }
 
     @GetMapping("/profile")
