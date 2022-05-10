@@ -2,6 +2,7 @@ package com.study.reproduce.handler;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -13,11 +14,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 @Controller
+@RequestMapping("/common")
 public class CaptchaHandler {
     @Resource
     private DefaultKaptcha defaultKaptcha;
 
-    @RequestMapping("/captcha")
+    @GetMapping("/captcha")
     public void captcha(HttpServletRequest request, HttpServletResponse response){
         String verifyCode = defaultKaptcha.createText();
         request.getSession().setAttribute("verifyCode", verifyCode);

@@ -6,4 +6,5 @@ import lombok.Data;
 public class AdminLoginData {
     private String account;
     private String password;
+    private String verifyCode;
 }
