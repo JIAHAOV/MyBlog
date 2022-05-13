@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2022-05-10 19:48:27
 */
 public interface TagService extends IService<Tag> {
-
+    Tag getTagByName(String tagName);
 }

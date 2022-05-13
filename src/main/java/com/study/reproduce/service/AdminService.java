@@ -31,4 +31,22 @@ public interface AdminService extends IService<Admin> {
      * @return 脱敏后的信息
      */
     Admin handleAdminMessage(Admin admin);
+
+    /**
+     * 修改密码
+     * @param adminUserId 用户id
+     * @param originalPassword 原来的密码
+     * @param newPassword  修改后密码
+     * @return 是否成功
+     */
+    boolean updatePassword(Integer adminUserId, String originalPassword, String newPassword);
+
+    /**
+     * 修改登录账户和昵称
+     * @param adminUserId 用户id
+     * @param loginUserName 登录账户
+     * @param nickName 昵称
+     * @return 是否成功
+     */
+    boolean updateName(Integer adminUserId, String loginUserName, String nickName);
 }

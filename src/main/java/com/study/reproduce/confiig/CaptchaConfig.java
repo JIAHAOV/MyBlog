@@ -33,7 +33,6 @@ public class CaptchaConfig {
         properties.put("kaptcha.image.height", imageHeight);
         properties.put("kaptcha.session.key", sessionKey);
         Config config = new Config(properties);
-        System.out.println(properties);
         defaultKaptcha.setConfig(config);
         return defaultKaptcha;
     }

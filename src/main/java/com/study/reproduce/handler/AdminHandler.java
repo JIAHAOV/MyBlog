@@ -6,11 +6,10 @@ import com.study.reproduce.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -51,7 +50,7 @@ public class AdminHandler {
         return "admin/login";
     }
 
-    @GetMapping("/login")
+    @GetMapping(value = {"/login", "/"})
     public String loginPage() {
         return "admin/login";
     }
@@ -65,12 +64,6 @@ public class AdminHandler {
         model.addAttribute("tagCount", tagService.count());
         model.addAttribute("linkCount", linkService.count());
         return "admin/index";
-    }
-
-    @GetMapping("/blogs")
-    public String blogs(Model model) {
-        model.addAttribute("path", "/admin/blogs");
-        return "admin/blog";
     }
 
     @GetMapping("/comments")
@@ -104,12 +97,6 @@ public class AdminHandler {
         return "admin/configuration";
     }
 
-    @GetMapping("/blogs/edit")
-    public String blogEdit(Model model) {
-        model.addAttribute("path", "admin/blogs/edit");
-        return "admin/edit";
-    }
-
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
         Object admin = session.getAttribute(AdminService.GET_ADMIN_KEY);
@@ -120,5 +107,56 @@ public class AdminHandler {
         }
         model.addAttribute("path", "admin/links");
         return "admin/profile";
+    }
+
+    @PostMapping("/profile/password")
+    @ResponseBody
+    public String passwordUpdate(HttpServletRequest request, String originalPassword, String newPassword) {
+        if (StringUtils.isAnyBlank(originalPassword, newPassword)) {
+            return "参数不能为空";
+        }
+        Integer adminUserId = getAdminUserId(request);
+        if (adminUserId == null) {
+            return "请先登录";
+        }
+        if (adminService.updatePassword(adminUserId, originalPassword, newPassword)) {
+            //清除之前的登录信息
+            request.getSession().removeAttribute(AdminService.GET_ADMIN_KEY);
+            request.getSession().removeAttribute("errorMsg");
+            //返回 success 让前端重新登录
+            return "success";
+        }
+        return "修改失败";
+    }
+
+    @PostMapping("/profile/name")
+    @ResponseBody
+    public String nameUpdate(HttpServletRequest request, String loginUserName, String nickName) {
+        if (StringUtils.isAnyBlank(loginUserName, nickName)) {
+            return "参数不能为空";
+        }
+        Integer adminUserId = getAdminUserId(request);
+        if (adminUserId == null) {
+            return "请先登录";
+        }
+        if (adminService.updateName(adminUserId, loginUserName, nickName)) {
+            return "success";
+        } else {
+            return "修改失败";
+        }
+    }
+
+    /**
+     * 获取登录管理员id
+     * @param request request
+     * @return id
+     */
+    public Integer getAdminUserId(HttpServletRequest request) {
+        Object attribute = request.getSession().getAttribute(AdminService.GET_ADMIN_KEY);
+        if (attribute == null) {
+            return null;
+        }
+        Admin admin = (Admin)attribute;
+        return admin.getAdminUserId();
     }
 }

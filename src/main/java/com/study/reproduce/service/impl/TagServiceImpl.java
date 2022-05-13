@@ -1,5 +1,6 @@
 package com.study.reproduce.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.model.domain.Tag;
 import com.study.reproduce.mapper.TagMapper;
@@ -15,6 +16,12 @@ import org.springframework.stereotype.Service;
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
     implements TagService {
 
+    @Override
+    public Tag getTagByName(String tagName) {
+        QueryWrapper<Tag> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("tag_name", tagName);
+        return this.getOne(queryWrapper);
+    }
 }
 
 

@@ -12,5 +12,11 @@ import javax.servlet.http.HttpSession;
 * @createDate 2022-05-10 21:27:59
 */
 public interface WebSiteConfigService extends IService<WebSiteConfig> {
+    /**
+     * 用来将默认设置存储到作用域中，方便在前端页面获取
+     * @param session session
+     * @param model 用来存储数据
+     * @return 是否成功
+     */
     boolean setConfigMessage(HttpSession session, Model model);
 }
