@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ReproduceApplication {
+    /*
+     * 解决druid 日志报错：discard long time none received connection:xxx
+     */
     static {
         System.setProperty("druid.mysql.usePingMethod","false");
     }

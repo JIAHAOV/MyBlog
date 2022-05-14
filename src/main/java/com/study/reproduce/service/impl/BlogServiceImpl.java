@@ -2,6 +2,9 @@ package com.study.reproduce.service.impl;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.mapper.CategoryMapper;
@@ -42,6 +45,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Override
     public PageResult<Blog> queryByPageUtil(PageQueryUtil queryUtil) {
         Page<Blog> page = new Page<>(queryUtil.getStart(), queryUtil.getLimit());
+        page.addOrder(OrderItem.desc("blog_id"));
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+//        wrapper.orderByDesc("blog_id");//或者使用 wrapper 进行排序
         Page<Blog> selectPage = blogMapper.selectPage(page, null);
         Long count = blogMapper.selectCount(null);
         return new PageResult<Blog>(Math.toIntExact(count), queryUtil.getLimit(), queryUtil.getPage(), selectPage.getRecords());
@@ -60,10 +66,38 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         } else {
             blog.setBlogCategoryName(category.getCategoryName());
         }
+        //新增
         int insert = blogMapper.insert(blog);
         if (insert <= 0) {
             return "新增失败";
         }
+        //同步标签和博客之间的关系
+        return updateBlogTagRelation(blog);
+    }
+
+    @Override
+    @Transactional
+    public String updateBlog(Blog blog) {
+        Blog oldBlog = blogMapper.selectById(blog.getBlogId());
+        if (oldBlog == null) {
+            return "查找不到该博客";
+        }
+        //检测分类是否改变
+        if (!oldBlog.getBlogCategoryId().equals(blog.getBlogCategoryId())) {
+            Category category = categoryMapper.selectById(blog.getBlogCategoryId());
+            blog.setBlogCategoryName(category.getCategoryName());
+        }
+        //更新博客
+        blogMapper.updateById(blog);
+        //检查标签是否改变
+        if (!oldBlog.getBlogTags().equals(blog.getBlogTags())) {
+            return updateBlogTagRelation(blog);
+        }
+        return "操作成功";
+    }
+
+    @Override
+    public String updateBlogTagRelation(Blog blog) {
         //获取所有标签
         String[] tagNames = blog.getBlogTags().split(",");
         if (tagNames.length > 6) {
@@ -91,10 +125,15 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             BlogTagRelation relation = new BlogTagRelation(blog.getBlogId(), tag.getTagId());
             relations.add(relation);
         }
+        QueryWrapper<BlogTagRelation> wrapper = new QueryWrapper<>();
+        wrapper.eq("blog_id", blog.getBlogId());
+        //先移除之前的关系
+        blogTagRelationService.remove(wrapper);
+        //更新关系
         if (blogTagRelationService.saveBatch(relations)) {
-            return "新增成功";
+            return "操作成功";
         }
-        return "新增失败";
+        return "操作失败";
     }
 }
 

@@ -25,4 +25,19 @@ public interface BlogService extends IService<Blog> {
      * @return 存储结果
      */
     String saveBlog(Blog blog);
+
+
+    /**
+     * 修改博客
+     * @param blog blog
+     * @return 修改结果
+     */
+    String updateBlog(Blog blog);
+
+    /**
+     * 存储新增标签，并同步标签和博客之间的关系
+     * @param blog
+     * @return
+     */
+    String updateBlogTagRelation(Blog blog);
 }
