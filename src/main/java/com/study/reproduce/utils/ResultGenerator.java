@@ -14,6 +14,14 @@ public class ResultGenerator {
         return result;
     }
 
+
+    public static Result getSuccessResult() {
+        Result result = new Result();
+        result.setMessage(DEFAULT_SUCCESS_MESSAGE);
+        result.setResultCode(RESULT_CODE_SUCCESS);
+        return result;
+    }
+
     public static Result getSuccessResult(String message) {
         Result result = new Result();
         result.setMessage(message);

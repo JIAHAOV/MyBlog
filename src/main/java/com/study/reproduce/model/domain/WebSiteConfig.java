@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -14,6 +18,8 @@ import lombok.Data;
  */
 @TableName(value ="tb_config")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class WebSiteConfig implements Serializable {
     /**
      * 主键
@@ -34,13 +40,19 @@ public class WebSiteConfig implements Serializable {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 修改时间
      */
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public WebSiteConfig(Integer configId, String configValue) {
+        this.configId = configId;
+        this.configValue = configValue;
+        this.createTime = LocalDateTime.now();
+    }
 }

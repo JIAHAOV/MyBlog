@@ -8,13 +8,12 @@ import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class TagHandler {
 
@@ -22,17 +21,16 @@ public class TagHandler {
     TagService tagService;
 
     @GetMapping("/tags/list")
-    @ResponseBody
     public Result list(PageParam pageParam) {
-        if (pageParam.getPage().isEmpty() || pageParam.getLimit().isEmpty()) {
+        if (pageParam.getPage() == null || pageParam.getLimit() == null) {
             return ResultGenerator.getFailResult("参数错误");
         }
         PageQueryUtil queryUtil = new PageQueryUtil(pageParam);
         PageResult<Tag> pageResult = tagService.queryByPageUtil(queryUtil);
         return ResultGenerator.getSuccessResult(pageResult);
     }
+
     @PostMapping("/tags/save")
-    @ResponseBody
     public Result save(String tagName) {
         if (tagName.isEmpty()) {
             ResultGenerator.getFailResult("参数错误");
@@ -46,7 +44,6 @@ public class TagHandler {
     }
 
     @PostMapping("/tags/delete")
-    @ResponseBody
     public Result delete(@RequestBody Integer[] ids) {
         if (ids.length == 0) {
             return ResultGenerator.getFailResult("参数错误");

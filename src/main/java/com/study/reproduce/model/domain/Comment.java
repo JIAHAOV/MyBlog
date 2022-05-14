@@ -3,6 +3,7 @@ package com.study.reproduce.model.domain;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -47,7 +48,7 @@ public class Comment implements Serializable {
     /**
      * 评论提交时间
      */
-    private Date commentCreateTime;
+    private LocalDateTime commentCreateTime;
 
     /**
      * 评论时的ip地址

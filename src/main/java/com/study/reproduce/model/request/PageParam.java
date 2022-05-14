@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PageParam {
-    private String page;
-    private String limit;
+    private Integer page;
+    private Integer limit;
 }

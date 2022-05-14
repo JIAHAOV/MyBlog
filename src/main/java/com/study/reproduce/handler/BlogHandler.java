@@ -9,7 +9,6 @@ import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class BlogHandler {
     @Resource
@@ -25,23 +24,11 @@ public class BlogHandler {
     @Resource
     CategoryService categoryService;
 
-    @GetMapping("/blogs")
-    public String blogs(Model model) {
-        model.addAttribute("path", "/admin/blogs");
-        return "admin/blog";
-    }
 
-    @GetMapping("/blogs/edit")
-    public String blogEdit(Model model) {
-        model.addAttribute("path", "admin/blogs/edit");
-        model.addAttribute("categories", categoryService.list());
-        return "admin/edit";
-    }
 
     @GetMapping("/blogs/list")
-    @ResponseBody
     public Result list(PageParam pageParam) {
-        if (pageParam.getPage().isEmpty() || pageParam.getLimit().isEmpty()) {
+        if (pageParam.getPage() == null || pageParam.getLimit() == null) {
             return ResultGenerator.getFailResult("参数错误");
         }
         PageQueryUtil queryUtil = new PageQueryUtil(pageParam);
@@ -62,7 +49,6 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/save")
-    @ResponseBody
     public Result save(Blog blog) {
         Result checkBlogInfo = checkBlogInfo(blog);
         if (checkBlogInfo != null) {
@@ -77,7 +63,6 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/update")
-    @ResponseBody
     public Result update(Blog blog) {
         Result checkBlogInfo = checkBlogInfo(blog);
         if (checkBlogInfo != null) {
@@ -92,7 +77,6 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/delete")
-    @ResponseBody
     public Result delete(@RequestBody Integer[] ids) {
         if (ids == null || ids.length <= 0) {
             return ResultGenerator.getFailResult("参数异常");
