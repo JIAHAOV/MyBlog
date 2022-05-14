@@ -39,8 +39,6 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     CategoryMapper categoryMapper;
     @Resource
     BlogTagRelationService blogTagRelationService;
-    @Resource
-    TagService tagService;
 
     @Override
     public PageResult<Blog> queryByPageUtil(PageQueryUtil queryUtil) {
@@ -50,7 +48,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
 //        wrapper.orderByDesc("blog_id");//或者使用 wrapper 进行排序
         Page<Blog> selectPage = blogMapper.selectPage(page, null);
         Long count = blogMapper.selectCount(null);
-        return new PageResult<Blog>(Math.toIntExact(count), queryUtil.getLimit(), queryUtil.getPage(), selectPage.getRecords());
+        return new PageResult<>(count, queryUtil.getLimit(), queryUtil.getPage(), selectPage.getRecords());
     }
 
     @Override
@@ -72,7 +70,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             return "新增失败";
         }
         //同步标签和博客之间的关系
-        return updateBlogTagRelation(blog);
+        return blogTagRelationService.updateBlogTagRelation(blog);
     }
 
     @Override
@@ -91,50 +89,11 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         blogMapper.updateById(blog);
         //检查标签是否改变
         if (!oldBlog.getBlogTags().equals(blog.getBlogTags())) {
-            return updateBlogTagRelation(blog);
+            return blogTagRelationService.updateBlogTagRelation(blog);
         }
         return "操作成功";
     }
 
-    @Override
-    public String updateBlogTagRelation(Blog blog) {
-        //获取所有标签
-        String[] tagNames = blog.getBlogTags().split(",");
-        if (tagNames.length > 6) {
-            return "标签上限为6个";
-        }
-        ArrayList<Tag> tags = new ArrayList<>();
-        ArrayList<Tag> newTags = new ArrayList<>();
-        //找出之前没有的标签
-        for (String tagName : tagNames) {
-            Tag tag = tagService.getTagByName(tagName);
-            if (tag == null) {
-                tag = new Tag();
-                tag.setTagName(tagName);
-                newTags.add(tag);
-            }
-            tags.add(tag);
-        }
-        //新增标签,主键自动回填，新增的没有设置 id 的对象，自动设置了 id
-        if (newTags.size() > 0) {
-            tagService.saveBatch(newTags);
-        }
-        //添加关系数据
-        ArrayList<BlogTagRelation> relations = new ArrayList<>();
-        for (Tag tag : tags) {
-            BlogTagRelation relation = new BlogTagRelation(blog.getBlogId(), tag.getTagId());
-            relations.add(relation);
-        }
-        QueryWrapper<BlogTagRelation> wrapper = new QueryWrapper<>();
-        wrapper.eq("blog_id", blog.getBlogId());
-        //先移除之前的关系
-        blogTagRelationService.remove(wrapper);
-        //更新关系
-        if (blogTagRelationService.saveBatch(relations)) {
-            return "操作成功";
-        }
-        return "操作失败";
-    }
 }
 
 

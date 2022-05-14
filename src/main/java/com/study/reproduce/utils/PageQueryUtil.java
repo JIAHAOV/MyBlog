@@ -1,5 +1,6 @@
 package com.study.reproduce.utils;
 
+import com.study.reproduce.model.request.PageParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,9 @@ public class PageQueryUtil {
         this.page = page;
         this.limit = limit;
         this.start = (page - 1) * limit;
+    }
+
+    public PageQueryUtil(PageParam pageParam) {
+        this(Integer.valueOf(pageParam.getPage()), Integer.valueOf(pageParam.getLimit()));
     }
 }

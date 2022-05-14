@@ -3,8 +3,12 @@ package com.study.reproduce.model.domain;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -12,6 +16,8 @@ import lombok.Data;
  */
 @TableName(value ="tb_blog_tag")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Tag implements Serializable {
     /**
      * 标签表主键id
@@ -33,8 +39,13 @@ public class Tag implements Serializable {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Tag(String tagName, LocalDateTime createTime) {
+        this.tagName = tagName;
+        this.createTime = createTime;
+    }
 }

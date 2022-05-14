@@ -1,10 +1,18 @@
 package com.study.reproduce.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.domain.BlogTagRelation;
+import com.study.reproduce.model.domain.Tag;
 import com.study.reproduce.service.BlogTagRelationService;
 import com.study.reproduce.mapper.BlogTagRelationMapper;
+import com.study.reproduce.service.TagService;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
 * @author 18714
@@ -15,6 +23,46 @@ import org.springframework.stereotype.Service;
 public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMapper, BlogTagRelation>
     implements BlogTagRelationService{
 
+    @Resource
+    TagService tagService;
+    @Override
+    public String updateBlogTagRelation(Blog blog) {
+        //获取所有标签
+        String[] tagNames = blog.getBlogTags().split(",");
+        if (tagNames.length > 6) {
+            return "标签上限为6个";
+        }
+        ArrayList<Tag> tags = new ArrayList<>();
+        ArrayList<Tag> newTags = new ArrayList<>();
+        //找出之前没有的标签
+        for (String tagName : tagNames) {
+            Tag tag = tagService.getTagByName(tagName);
+            if (tag == null) {
+                tag = new Tag(tagName, LocalDateTime.now());
+                newTags.add(tag);
+            }
+            tags.add(tag);
+        }
+        //新增标签,主键自动回填，新增的没有设置 id 的对象，自动设置了 id
+        if (newTags.size() > 0) {
+            tagService.saveBatch(newTags);
+        }
+        //添加关系数据
+        ArrayList<BlogTagRelation> relations = new ArrayList<>();
+        for (Tag tag : tags) {
+            BlogTagRelation relation = new BlogTagRelation(blog.getBlogId(), tag.getTagId());
+            relations.add(relation);
+        }
+        QueryWrapper<BlogTagRelation> wrapper = new QueryWrapper<>();
+        wrapper.eq("blog_id", blog.getBlogId());
+        //先移除之前的关系
+        this.remove(wrapper);
+        //更新关系
+        if (this.saveBatch(relations)) {
+            return "操作成功";
+        }
+        return "操作失败";
+    }
 }
 
 

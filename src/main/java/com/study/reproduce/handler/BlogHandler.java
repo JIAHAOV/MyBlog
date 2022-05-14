@@ -1,20 +1,22 @@
 package com.study.reproduce.handler;
 
 import com.study.reproduce.model.domain.Blog;
+import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.service.CategoryService;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 public class BlogHandler {
@@ -38,13 +40,11 @@ public class BlogHandler {
 
     @GetMapping("/blogs/list")
     @ResponseBody
-    public Result list(@RequestParam Map<String, String> params) {
-        if (params.get("page") == null || params.get("limit") == null) {
+    public Result list(PageParam pageParam) {
+        if (pageParam.getPage().isEmpty() || pageParam.getLimit().isEmpty()) {
             return ResultGenerator.getFailResult("参数错误");
         }
-        Integer page = Integer.valueOf(params.get("page"));
-        Integer limit = Integer.valueOf(params.get("limit"));
-        PageQueryUtil queryUtil = new PageQueryUtil(page, limit);
+        PageQueryUtil queryUtil = new PageQueryUtil(pageParam);
         PageResult<Blog> pageResult = blogService.queryByPageUtil(queryUtil);
         return ResultGenerator.getSuccessResult(pageResult);
     }
