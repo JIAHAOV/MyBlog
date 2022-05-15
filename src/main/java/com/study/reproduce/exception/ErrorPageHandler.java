@@ -9,16 +9,16 @@ public class ErrorPageHandler {
 
     @RequestMapping("/error_404")
     public String notFound() {
-        return "error/error_404";
+        return "error/404";
     }
 
     @RequestMapping("/error_400")
     public String badRequest() {
-        return "error/error_400";
+        return "error/400";
     }
 
     @RequestMapping("/error_5xx")
     public String systemError() {
-        return "error/error_5xx";
+        return "error/5xx";
     }
 }

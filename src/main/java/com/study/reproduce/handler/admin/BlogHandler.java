@@ -37,14 +37,9 @@ public class BlogHandler {
         return ResultGenerator.getSuccessResult(pageResult);
     }
 
-    @GetMapping("/blogs/edit/{blogId}")
-    public String edit(Model model, @PathVariable("blogId") Long blogId) {
+    @GetMapping("/blogs/edit")
+    public String edit(Model model) {
         model.addAttribute("path", "edit");
-        Blog blog = blogService.getById(blogId);
-        if (blog == null) {
-            return "error/error_400";
-        }
-        model.addAttribute("blog", blog);
         model.addAttribute("categories", categoryService.list());
         return "admin/edit";
     }

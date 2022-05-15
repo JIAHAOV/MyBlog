@@ -7,10 +7,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new AdminInterceptor())
-//                .addPathPatterns("/admin/**")
-//                .excludePathPatterns("/admin/login", "*.*");
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AdminInterceptor())
+                .addPathPatterns("/admin/**")
+                .excludePathPatterns("/admin/login")
+                .excludePathPatterns("/admin/dist/**")
+                .excludePathPatterns("/admin/plugins/**");
+    }
 }

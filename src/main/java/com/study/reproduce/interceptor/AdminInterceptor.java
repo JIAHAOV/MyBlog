@@ -2,6 +2,7 @@ package com.study.reproduce.interceptor;
 
 
 import com.study.reproduce.service.AdminService;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
