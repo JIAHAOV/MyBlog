@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.constant.VerifyCode;
+import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.service.AdminService;
 import com.study.reproduce.mapper.AdminMapper;
@@ -32,24 +33,24 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     @Override
     public Admin login(String account, String password,String verifyCode, HttpSession session) {
         if (StringUtils.isAnyBlank(account, password, verifyCode)) {
-            return null;
+            throw ExceptionManager.genException("参数错误");
         }
         //TODO 验证是否有特殊字符
         Object loginVerifyCode = session.getAttribute(VerifyCode.VERIFY_CODE_KEY);
         if (loginVerifyCode == null) {
-            return null;
+            throw ExceptionManager.genException("验证码错误");
         }
         if (!loginVerifyCode.equals(verifyCode)) {
-            return null;
+            throw ExceptionManager.genException("验证码错误");
         }
         QueryWrapper<Admin> wrapper = new QueryWrapper<Admin>();
         wrapper.eq("login_user_name", account);
         Admin admin = adminMapper.selectOne(wrapper);
         if (admin == null) {
-            return null;
+            throw ExceptionManager.genException("用户名或密码错误");
         }
         if (!admin.getLoginPassword().equals(MD5Util.encryptPassword(password))) {
-            return null;
+            throw ExceptionManager.genException("用户名或密码错误");
         }
         Admin safelyAdmin = handleAdminMessage(admin);
         session.setAttribute(GET_ADMIN_KEY, safelyAdmin);
@@ -74,19 +75,19 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     @Override
     public boolean updatePassword(Integer adminUserId, String originalPassword, String newPassword) {
         if (adminUserId == null || StringUtils.isAnyEmpty(originalPassword, newPassword)) {
-            return false;
+            throw ExceptionManager.genException("参数错误");
         }
         UpdateWrapper<Admin> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("login_password", newPassword)
+        updateWrapper.set("login_password", MD5Util.encryptPassword(newPassword))
                 .eq("admin_user_id", adminUserId)
-                .eq("login_password", originalPassword);
+                .eq("login_password", MD5Util.encryptPassword(originalPassword));
         return this.update(updateWrapper);
     }
 
     @Override
     public boolean updateName(Integer adminUserId, String loginUserName, String nickName) {
         if (adminUserId == null || StringUtils.isAnyEmpty(loginUserName, nickName)) {
-            return false;
+            throw ExceptionManager.genException("参数错误");
         }
         UpdateWrapper<Admin> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("login_user_name", loginUserName)

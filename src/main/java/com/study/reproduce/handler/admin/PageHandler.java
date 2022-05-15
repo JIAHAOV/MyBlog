@@ -1,10 +1,12 @@
-package com.study.reproduce.handler;
+package com.study.reproduce.handler.admin;
 
 import com.study.reproduce.model.domain.Admin;
+import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -13,8 +15,6 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/admin")
 public class PageHandler {
-    @Resource
-    AdminService adminService;
     @Resource
     BlogService blogService;
     @Resource
@@ -87,8 +87,13 @@ public class PageHandler {
         return "admin/blog";
     }
 
-    @GetMapping("/blogs/edit")
-    public String blogEdit(Model model) {
+    @GetMapping("/blogs/edit/{blogId}")
+    public String blogEdit(Model model, @PathVariable String blogId) {
+        Blog blog = blogService.getById(blogId);
+        if (blog == null) {
+            return "error/error_404";
+        }
+        model.addAttribute("blog", blog);
         model.addAttribute("path", "admin/blogs/edit");
         model.addAttribute("categories", categoryService.list());
         return "admin/edit";

@@ -1,5 +1,6 @@
-package com.study.reproduce.handler;
+package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.BlogService;
@@ -13,7 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -29,7 +30,7 @@ public class BlogHandler {
     @GetMapping("/blogs/list")
     public Result list(PageParam pageParam) {
         if (pageParam.getPage() == null || pageParam.getLimit() == null) {
-            return ResultGenerator.getFailResult("参数错误");
+            throw ExceptionManager.genException("参数错误");
         }
         PageQueryUtil queryUtil = new PageQueryUtil(pageParam);
         PageResult<Blog> pageResult = blogService.queryByPageUtil(queryUtil);
@@ -50,70 +51,61 @@ public class BlogHandler {
 
     @PostMapping("/blogs/save")
     public Result save(Blog blog) {
-        Result checkBlogInfo = checkBlogInfo(blog);
-        if (checkBlogInfo != null) {
-            return checkBlogInfo;
-        }
-        String result = blogService.saveBlog(blog);
-        if ("操作成功".equals(result)) {
+        checkBlogInfo(blog);
+        if (blogService.saveBlog(blog)) {
             return ResultGenerator.getSuccessResult("新增成功");
         } else {
-            return ResultGenerator.getFailResult(result);
+            throw ExceptionManager.genException("新增失败");
         }
     }
 
     @PostMapping("/blogs/update")
     public Result update(Blog blog) {
-        Result checkBlogInfo = checkBlogInfo(blog);
-        if (checkBlogInfo != null) {
-            return checkBlogInfo;
-        }
-        String result = blogService.updateBlog(blog);
-        if ("操作成功".equals(result)) {
+        checkBlogInfo(blog);
+        if (blogService.updateBlog(blog)) {
             return ResultGenerator.getSuccessResult("更新成功");
         } else {
-            return ResultGenerator.getFailResult(result);
+            throw ExceptionManager.genException("更新失败");
         }
     }
 
     @PostMapping("/blogs/delete")
-    public Result delete(@RequestBody Integer[] ids) {
-        if (ids == null || ids.length <= 0) {
-            return ResultGenerator.getFailResult("参数异常");
+    public Result delete(@RequestBody List<Integer> ids) {
+        if (ids == null || ids.size() <= 0) {
+            throw ExceptionManager.genException("参数异常");
         }
-        boolean result = blogService.removeByIds(Arrays.asList(ids));
+        boolean result = blogService.deleteBlogs(ids);
         if (result) {
             return ResultGenerator.getSuccessResult("删除成功");
         } else {
-            return ResultGenerator.getFailResult("删除失败");
+            throw ExceptionManager.genException("删除失败");
         }
     }
 
-    public Result checkBlogInfo(Blog blog) {
+    public void checkBlogInfo(Blog blog) {
         if (blog.getBlogTitle().isEmpty()) {
-            return ResultGenerator.getFailResult("标题不能为空");
+            throw ExceptionManager.genException("标题不能为空");
         }
         if (blog.getBlogTitle().length() > 150) {
-            return ResultGenerator.getFailResult("标题过长");
+            throw ExceptionManager.genException("标题过长");
         }
         if (blog.getBlogTags().isEmpty()) {
-            return ResultGenerator.getFailResult("标签不能为空");
+            throw ExceptionManager.genException("标签不能为空");
         }
         if (blog.getBlogTags().length() > 150) {
-            return ResultGenerator.getFailResult("标签过长");
+            throw ExceptionManager.genException("标签过长");
         }
         if (blog.getBlogSubUrl().length() > 150) {
-            return ResultGenerator.getFailResult("url路径过长");
+            throw ExceptionManager.genException("url路径过长");
         }
         if (blog.getBlogContent().isEmpty()) {
-            return ResultGenerator.getFailResult("请输入文章内容");
+            throw ExceptionManager.genException("请输入文章内容");
         }
         if (blog.getBlogContent().length() > 50000) {
-            return ResultGenerator.getFailResult("文章内容过长");
+            throw ExceptionManager.genException("文章内容过长");
         }
         if (blog.getBlogCoverImage().isEmpty()) {
-            return ResultGenerator.getFailResult("封面不能为空");
+            throw ExceptionManager.genException("封面不能为空");
         }
-        return null;
     }
 }

@@ -26,7 +26,7 @@ public interface BlogService extends IService<Blog> {
      * @param blog blog
      * @return 存储结果
      */
-    String saveBlog(Blog blog);
+    boolean saveBlog(Blog blog);
 
 
     /**
@@ -34,5 +34,12 @@ public interface BlogService extends IService<Blog> {
      * @param blog blog
      * @return 修改结果
      */
-    String updateBlog(Blog blog);
+    boolean updateBlog(Blog blog);
+
+    /**
+     * 批量删除博客，并移除和标签的关系
+     * @param ids
+     * @return
+     */
+    boolean deleteBlogs(List<Integer> ids);
 }

@@ -35,4 +35,15 @@ public class ResultGenerator {
         result.setResultCode(40001);
         return result;
     }
+
+    public static Result getFailResult(String message, Integer resultCode) {
+        Result result = new Result();
+        result.setMessage(message);
+        if (resultCode == null) {
+            result.setResultCode(RESULT_CODE_SERVER_ERROR);
+        } else {
+            result.setResultCode(resultCode);
+        }
+        return result;
+    }
 }

@@ -10,9 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Object admin = request.getSession().getAttribute(AdminService.GET_ADMIN_KEY);
-        if (admin == null) {
-            response.sendRedirect("/admin/login");
+        if (request.getServletPath().startsWith("/admin") &&
+                request.getSession().getAttribute(AdminService.GET_ADMIN_KEY) == null) {
+            request.getSession().setAttribute("errorMsg", "请先登录");
+            response.sendRedirect(request.getContextPath() + "/admin/login");
             return false;
         } else {
             return true;

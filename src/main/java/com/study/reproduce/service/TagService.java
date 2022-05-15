@@ -25,7 +25,7 @@ public interface TagService extends IService<Tag> {
      * @param tagName 标签名称
      * @return 新增结果
      */
-    String saveTag(String tagName);
+    boolean saveTag(String tagName);
 
     /**
      * 批量删除标签，有关联关系的不删除

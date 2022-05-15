@@ -16,5 +16,5 @@ public interface BlogTagRelationService extends IService<BlogTagRelation> {
      * @param blog
      * @return
      */
-    String updateBlogTagRelation(Blog blog);
+    boolean updateBlogTagRelation(Blog blog);
 }

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.mapper.BlogTagRelationMapper;
 import com.study.reproduce.mapper.CategoryMapper;
 import com.study.reproduce.mapper.TagMapper;
 import com.study.reproduce.model.domain.Blog;
@@ -53,7 +55,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
 
     @Override
     @Transactional
-    public String saveBlog(Blog blog) {
+    public boolean saveBlog(Blog blog) {
         blog.setCreateTime(LocalDateTime.now());
         //为文章设置种类名称
         Category category = categoryMapper.selectById(blog.getBlogCategoryId());
@@ -67,7 +69,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         //新增
         int insert = blogMapper.insert(blog);
         if (insert <= 0) {
-            return "新增失败";
+            throw ExceptionManager.genException("更新失败");
         }
         //同步标签和博客之间的关系
         return blogTagRelationService.updateBlogTagRelation(blog);
@@ -75,10 +77,10 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
 
     @Override
     @Transactional
-    public String updateBlog(Blog blog) {
+    public boolean updateBlog(Blog blog) {
         Blog oldBlog = blogMapper.selectById(blog.getBlogId());
         if (oldBlog == null) {
-            return "查找不到该博客";
+            throw ExceptionManager.genException("查找不到该博客");
         }
         //检测分类是否改变
         if (!oldBlog.getBlogCategoryId().equals(blog.getBlogCategoryId())) {
@@ -91,7 +93,20 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         if (!oldBlog.getBlogTags().equals(blog.getBlogTags())) {
             return blogTagRelationService.updateBlogTagRelation(blog);
         }
-        return "操作成功";
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteBlogs(List<Integer> ids) {
+        QueryWrapper<BlogTagRelation> wrapper = new QueryWrapper<>();
+        wrapper.in("blog_id", ids);
+        if (blogTagRelationService.count(wrapper) > 0) {
+            if (!blogTagRelationService.remove(wrapper)) {
+                return false;
+            }
+        }
+        return this.removeByIds(ids);
     }
 }
 

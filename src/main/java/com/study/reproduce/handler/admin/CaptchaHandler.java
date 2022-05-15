@@ -1,4 +1,4 @@
-package com.study.reproduce.handler;
+package com.study.reproduce.handler.admin;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import org.springframework.stereotype.Controller;

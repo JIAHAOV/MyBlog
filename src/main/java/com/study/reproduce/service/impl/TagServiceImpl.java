@@ -3,6 +3,7 @@ package com.study.reproduce.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.mapper.BlogTagRelationMapper;
 import com.study.reproduce.model.domain.BlogTagRelation;
 import com.study.reproduce.model.domain.Tag;
@@ -56,26 +57,23 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
     }
 
     @Override
-    public String saveTag(String tagName) {
+    public boolean saveTag(String tagName) {
         if (tagName.isEmpty()) {
-            return "参数不能为空";
+            throw ExceptionManager.genException("参数不能为空");
         }
         if (tagName.length() > 10) {
-            return "标签名过长";
+            throw ExceptionManager.genException("标签名过长");
         }
         //使用正则表达式判断名称是否符合规范
         String valid = "^[\\u4e00-\\u9fa5_a-zA-Z0-9]+$";
         Pattern pattern = Pattern.compile(valid);
         Matcher matcher = pattern.matcher(tagName);
         if (!matcher.find()) {
-            return "只能包括字母、中文、数字、下划线";
+            throw ExceptionManager.genException("只能包括字母、中文、数字、下划线");
         }
         Tag tag = new Tag(tagName, LocalDateTime.now());
         int result = tagMapper.insert(tag);
-        if (result > 0) {
-            return "新增成功";
-        }
-        return "新增失败";
+        return result > 0;
     }
 
     @Override

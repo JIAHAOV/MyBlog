@@ -1,4 +1,4 @@
-package com.study.reproduce.handler;
+package com.study.reproduce.handler.admin;
 
 import com.study.reproduce.constant.WebSiteConfigId;
 import com.study.reproduce.model.domain.WebSiteConfig;

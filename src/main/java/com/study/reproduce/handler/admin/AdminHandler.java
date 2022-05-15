@@ -1,5 +1,6 @@
-package com.study.reproduce.handler;
+package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.model.request.AdminLoginData;
 import com.study.reproduce.service.*;
@@ -25,7 +26,7 @@ public class AdminHandler {
         String password = loginData.getPassword();
         String verifyCode = loginData.getVerifyCode();
         if (StringUtils.isAnyBlank(account, password, verifyCode)) {
-            //TODO 抛出自定义异常
+            throw ExceptionManager.genException("参数错误");
         }
         Admin admin = adminService.login(account, password, verifyCode, session);
         response.sendRedirect("/admin/index");
