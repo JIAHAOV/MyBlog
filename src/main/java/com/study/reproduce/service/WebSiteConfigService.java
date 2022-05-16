@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
 * @author 18714
@@ -19,4 +20,6 @@ public interface WebSiteConfigService extends IService<WebSiteConfig> {
      * @return 是否成功
      */
     boolean setConfigMessage(HttpSession session, Model model);
+
+    Map<String, String> getAllConfigs();
 }

@@ -1,7 +1,14 @@
-FROM java:8
+FROM maven:java8 as builder
 
-COPY *.jar /app.jar
+# Copy local code to the container image.
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 
-EXPOSE 8090
+# Build a release artifact.
+RUN mvn package -DskipTests
 
-ENTRYPOINT ["java","-jar","/app.jar","--spring.profiles.active=prod"]
+EXPOSE 8100
+
+# Run the web service on container startup.
+CMD ["java","-jar","/app/target/reproduce-0.0.1-SNAPSHOT.jar","--spring.profiles.active=prod"]

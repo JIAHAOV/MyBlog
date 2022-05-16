@@ -11,7 +11,9 @@ import org.springframework.ui.Model;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author 18714
@@ -35,6 +37,16 @@ public class WebSiteConfigServiceImpl extends ServiceImpl<WebSiteConfigMapper, W
             model.addAttribute(webSiteConfig.getConfigName(), webSiteConfig.getConfigValue());
         }
         return true;
+    }
+
+    @Override
+    public Map<String, String> getAllConfigs() {
+        List<WebSiteConfig> configs = webSiteConfigMapper.selectList(null);
+        Map<String, String> map = new HashMap<>();
+        for (WebSiteConfig config : configs) {
+            map.put(config.getConfigName(), config.getConfigValue());
+        }
+        return map;
     }
 }
 
