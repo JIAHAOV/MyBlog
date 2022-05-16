@@ -45,11 +45,15 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Override
     public PageResult<Blog> queryByPageUtil(PageQueryUtil queryUtil) {
         Page<Blog> page = new Page<>(queryUtil.getStart(), queryUtil.getLimit());
-        page.addOrder(OrderItem.desc("blog_id"));
+//        page.addOrder(OrderItem.desc("blog_id"));
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-//        wrapper.orderByDesc("blog_id");//或者使用 wrapper 进行排序
-        Page<Blog> selectPage = blogMapper.selectPage(page, null);
-        Long count = blogMapper.selectCount(null);
+        if (queryUtil.getKeyword() != null) {
+            wrapper.like("blog_category_name", queryUtil.getKeyword())
+                    .or().like("blog_title", queryUtil.getKeyword());
+        }
+        wrapper.orderByDesc("blog_id");//或者使用 wrapper 进行排序
+        Page<Blog> selectPage = blogMapper.selectPage(page, wrapper);
+        Long count = blogMapper.selectCount(wrapper);
         return new PageResult<>(count, queryUtil.getLimit(), queryUtil.getPage(), selectPage.getRecords());
     }
 

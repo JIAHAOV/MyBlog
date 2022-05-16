@@ -31,6 +31,7 @@ public class PageHandler {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute(AdminService.GET_ADMIN_KEY);
+        session.removeAttribute("errorMsg");
         return "admin/login";
     }
 
@@ -91,10 +92,17 @@ public class PageHandler {
     public String blogEdit(Model model, @PathVariable String blogId) {
         Blog blog = blogService.getById(blogId);
         if (blog == null) {
-            return "error/error_404";
+            return "error/404";
         }
         model.addAttribute("blog", blog);
         model.addAttribute("path", "admin/blogs/edit");
+        model.addAttribute("categories", categoryService.list());
+        return "admin/edit";
+    }
+
+    @GetMapping("/blogs/edit")
+    public String edit(Model model) {
+        model.addAttribute("path", "edit");
         model.addAttribute("categories", categoryService.list());
         return "admin/edit";
     }

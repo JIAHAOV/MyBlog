@@ -24,15 +24,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public void runtimeException(RuntimeException e, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public String runtimeException(RuntimeException e, HttpServletResponse response, HttpServletRequest request) throws IOException {
         request.getSession().setAttribute("errorMsg", e.getMessage());
         HttpStatus status = getStatus(request);
         if (status == HttpStatus.BAD_REQUEST) {
-            response.sendRedirect(request.getContextPath() + "/error/error_400");
+            return "/error/400";
         } else if (status == HttpStatus.NOT_FOUND) {
-            response.sendRedirect(request.getContextPath() + "/error/error_404");
+            return "/error/404";
         } else {
-            response.sendRedirect(request.getContextPath() + "/error/error_5xx");
+            return "/error/5xx";
         }
     }
 

@@ -1,8 +1,9 @@
 package com.study.reproduce.handler.admin;
 
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.utils.FileUtil;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
+import com.study.reproduce.utils.URIUtil;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,19 +19,17 @@ import java.util.UUID;
 public class UploadFileHandler {
 
     @PostMapping({"/upload/file"})
-    public Result upload(HttpServletRequest httpServletRequest, @RequestParam("file") MultipartFile multipartFile) throws URISyntaxException {
-        String originalFilename = multipartFile.getOriginalFilename();
-        String fileName = UUID.randomUUID().toString() + "_" + originalFilename;
-        File file = new File(fileName);
+    public Result upload(HttpServletRequest request, @RequestParam("file") MultipartFile multipartFile) throws URISyntaxException {
+        File file = FileUtil.getUploadFile(UploadFileHandler.class, multipartFile);
+        System.out.println(file.getAbsolutePath());
         try {
-            if (!file.createNewFile()) {
-                throw ExceptionManager.genException("创建文件出现异常");
-            }
             multipartFile.transferTo(file);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("上传错误");
         }
-        return ResultGenerator.getSuccessResult(new URI(file.getPath()));
+        String url = request.getRequestURL().toString();
+        URI uri = URIUtil.getResponseURI(new URI(url), file.getName());
+        return ResultGenerator.getSuccessResult(uri);
     }
 }

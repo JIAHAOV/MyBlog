@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @RestController
@@ -21,15 +20,21 @@ public class AdminHandler {
     AdminService adminService;
 
     @PostMapping("/login")
-    public void login(AdminLoginData loginData, HttpSession session, HttpServletResponse response) throws IOException {
+    public void login(AdminLoginData loginData, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String account = loginData.getAccount();
         String password = loginData.getPassword();
         String verifyCode = loginData.getVerifyCode();
         if (StringUtils.isAnyBlank(account, password, verifyCode)) {
-            throw ExceptionManager.genException("参数错误");
+            request.setAttribute("errorMsg", "参数错误");
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+        } else {
+            Admin admin = adminService.login(account, password, verifyCode, request.getSession());
+            if (admin == null) {
+                response.sendRedirect(request.getContextPath() + "/admin/login");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/admin/index");
+            }
         }
-        Admin admin = adminService.login(account, password, verifyCode, session);
-        response.sendRedirect("/admin/index");
     }
 
     @PostMapping("/profile/password")

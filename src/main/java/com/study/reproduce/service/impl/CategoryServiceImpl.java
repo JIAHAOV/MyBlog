@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.mapper.BlogMapper;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.domain.Category;
@@ -67,6 +68,18 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category>
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean saveCategory(Category category) {
+        QueryWrapper<Category> wrapper = new QueryWrapper<>();
+        wrapper.eq("category_name", category.getCategoryName());
+        if (categoryMapper.selectCount(wrapper) > 0) {
+            throw ExceptionManager.genException("名称重复");
+        }
+        category.setCategoryId(null);
+        int insert = categoryMapper.insert(category);
+        return insert > 0;
     }
 }
 

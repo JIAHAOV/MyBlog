@@ -1,20 +1,26 @@
 package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.constant.FileConstant;
 import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.BlogService;
-import com.study.reproduce.service.CategoryService;
-import com.study.reproduce.utils.PageQueryUtil;
-import com.study.reproduce.utils.PageResult;
-import com.study.reproduce.utils.Result;
-import com.study.reproduce.utils.ResultGenerator;
+import com.study.reproduce.utils.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.Model;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -22,10 +28,6 @@ import java.util.List;
 public class BlogHandler {
     @Resource
     BlogService blogService;
-    @Resource
-    CategoryService categoryService;
-
-
 
     @GetMapping("/blogs/list")
     public Result list(PageParam pageParam) {
@@ -37,18 +39,11 @@ public class BlogHandler {
         return ResultGenerator.getSuccessResult(pageResult);
     }
 
-    @GetMapping("/blogs/edit")
-    public String edit(Model model) {
-        model.addAttribute("path", "edit");
-        model.addAttribute("categories", categoryService.list());
-        return "admin/edit";
-    }
-
     @PostMapping("/blogs/save")
     public Result save(Blog blog) {
         checkBlogInfo(blog);
         if (blogService.saveBlog(blog)) {
-            return ResultGenerator.getSuccessResult("新增成功");
+            return ResultGenerator.getSuccessResult("添加成功");
         } else {
             throw ExceptionManager.genException("新增失败");
         }
@@ -74,6 +69,44 @@ public class BlogHandler {
             return ResultGenerator.getSuccessResult("删除成功");
         } else {
             throw ExceptionManager.genException("删除失败");
+        }
+    }
+
+    @GetMapping("/blogs/{fileName}")
+    public void getBlogCover(@PathVariable String fileName, HttpServletResponse response) {
+        File file = FileUtil.getLoadFile(BlogHandler.class, fileName);
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/jpeg");
+        try {
+            BufferedImage image = ImageIO.read(file);
+            ImageIO.write(image, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            //TODO 异常处理
+            e.printStackTrace();
+        }
+    }
+
+    @PostMapping("/blogs/md/uploadfile")
+    public void uploadFileByEditorMd(@RequestParam(name = "editormd-image-file") MultipartFile multipartFile,
+                                     HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
+        File file = FileUtil.getUploadFile(BlogHandler.class, multipartFile);
+        System.out.println(file.getAbsolutePath());
+        try {
+            //上传文件
+            multipartFile.transferTo(file);
+            request.setCharacterEncoding("utf-8");
+            response.setHeader("Content-Type", "text/html");
+            String url = request.getRequestURL().toString();
+            //回复
+            URI uri = URIUtil.getResponseURI(new URI(url), file.getName());
+            response.getWriter().write("{\"success\": 1, \"message\":\"success\",\"url\":\"" + uri + "\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.getWriter().write("{\"success\":0}");
+            throw new RuntimeException("上传错误");
         }
     }
 

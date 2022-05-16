@@ -1,16 +1,19 @@
 package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Category;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.CategoryService;
 import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class CategoryHandler {
@@ -21,7 +24,7 @@ public class CategoryHandler {
     @GetMapping("/categories/list")
     public Result list(PageParam pageParam) {
         if (pageParam == null && pageParam.getLimit() == null) {
-            return ResultGenerator.getFailResult("参数错误");
+            throw ExceptionManager.genException("参数错误");
         }
         PageResult<Category> pageResult = categoryService.queryCategoryPage(pageParam.getPage(), pageParam.getLimit());
         return ResultGenerator.getSuccessResult(pageResult);
@@ -32,14 +35,13 @@ public class CategoryHandler {
      */
     @PostMapping("/categories/save")
     public Result save(Category category) {
-        Result result = checkCategoryInfo(category);
-        if (result != null) {
-            return result;
-        }
-        if (categoryService.save(category)) {
+        checkCategoryInfo(category);
+        boolean result = categoryService.saveCategory(category);
+        log.info("新增: " + result + " : " + category);
+        if (result) {
             return ResultGenerator.getSuccessResult();
         } else {
-            return ResultGenerator.getFailResult("名称重复");
+            throw ExceptionManager.genException("新增失败");
         }
     }
 
@@ -49,14 +51,13 @@ public class CategoryHandler {
      */
     @PostMapping("/categories/update")
     public Result update(Category category) {
-        Result result = checkCategoryInfo(category);
-        if (result != null) {
-            return result;
-        }
-        if (categoryService.updateById(category)) {
+        checkCategoryInfo(category);
+        boolean result = categoryService.updateById(category);
+        log.info("修改: " + result + " : " + category);
+        if (result) {
             return ResultGenerator.getSuccessResult();
         } else {
-            return ResultGenerator.getFailResult("名称重复");
+            throw ExceptionManager.genException("修改失败");
         }
     }
 
@@ -69,26 +70,26 @@ public class CategoryHandler {
         if (ids == null || ids.size() == 0) {
             return ResultGenerator.getFailResult("参数错误");
         }
-        if (categoryService.deleteByIds(ids)) {
+        boolean result = categoryService.deleteByIds(ids);
+        if (result) {
             return ResultGenerator.getSuccessResult();
         } else {
-            return ResultGenerator.getFailResult("删除失败");
+            throw ExceptionManager.genException("删除失败");
         }
     }
 
     /**
      * 检查是否符合规范
      */
-    public Result checkCategoryInfo(Category category) {
+    public void checkCategoryInfo(Category category) {
         if (category == null) {
-            return ResultGenerator.getFailResult("参数错误");
+            throw ExceptionManager.genException("参数错误");
         }
         if (category.getCategoryIcon().isEmpty()) {
-            return ResultGenerator.getFailResult("请选择分类图标");
+            throw ExceptionManager.genException("请选择分类图标");
         }
         if (category.getCategoryName().isEmpty()) {
-            return ResultGenerator.getFailResult("请输入名称");
+            throw ExceptionManager.genException("请输入名称");
         }
-        return null;
     }
 }

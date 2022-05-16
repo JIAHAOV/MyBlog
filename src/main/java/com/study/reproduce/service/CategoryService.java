@@ -16,4 +16,6 @@ public interface CategoryService extends IService<Category> {
     PageResult<Category> queryCategoryPage(int currentPage, int pageSize);
 
     boolean deleteByIds(List<Integer> ids);
+
+    boolean saveCategory(Category category);
 }

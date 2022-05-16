@@ -33,24 +33,25 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     @Override
     public Admin login(String account, String password,String verifyCode, HttpSession session) {
         if (StringUtils.isAnyBlank(account, password, verifyCode)) {
-            throw ExceptionManager.genException("参数错误");
+            session.setAttribute("errorMsg", "参数错误");
+            return null;
         }
         //TODO 验证是否有特殊字符
         Object loginVerifyCode = session.getAttribute(VerifyCode.VERIFY_CODE_KEY);
-        if (loginVerifyCode == null) {
-            throw ExceptionManager.genException("验证码错误");
-        }
-        if (!loginVerifyCode.equals(verifyCode)) {
-            throw ExceptionManager.genException("验证码错误");
-        }
+//        if (loginVerifyCode == null || !loginVerifyCode.equals(verifyCode)) {
+//            session.setAttribute("errorMsg", "验证码错误");
+//            return null;
+//        }
         QueryWrapper<Admin> wrapper = new QueryWrapper<Admin>();
         wrapper.eq("login_user_name", account);
         Admin admin = adminMapper.selectOne(wrapper);
         if (admin == null) {
-            throw ExceptionManager.genException("用户名或密码错误");
+            session.setAttribute("errorMsg", "用户名或密码错误");
+            return null;
         }
         if (!admin.getLoginPassword().equals(MD5Util.encryptPassword(password))) {
-            throw ExceptionManager.genException("用户名或密码错误");
+            session.setAttribute("errorMsg", "用户名或密码错误");
+            return null;
         }
         Admin safelyAdmin = handleAdminMessage(admin);
         session.setAttribute(GET_ADMIN_KEY, safelyAdmin);

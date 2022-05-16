@@ -8,4 +8,5 @@ import lombok.Data;
 public class PageParam {
     private Integer page;
     private Integer limit;
+    private String keyword;
 }

@@ -15,6 +15,8 @@ public class PageQueryUtil {
     private Integer limit;
     //本页开始的条数
     private Integer start;
+    //搜索时的关键词
+    private String keyword;
 
     public PageQueryUtil(Integer page, Integer limit) {
         this.page = page;
@@ -23,6 +25,7 @@ public class PageQueryUtil {
     }
 
     public PageQueryUtil(PageParam pageParam) {
-        this(Integer.valueOf(pageParam.getPage()), Integer.valueOf(pageParam.getLimit()));
+        this(pageParam.getPage(), pageParam.getLimit());
+        this.keyword = pageParam.getKeyword();
     }
 }
