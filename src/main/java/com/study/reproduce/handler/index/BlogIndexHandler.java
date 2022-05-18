@@ -1,5 +1,6 @@
 package com.study.reproduce.handler.index;
 
+import com.study.reproduce.confiig.WebSiteStyleConfig;
 import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.domain.Comment;
@@ -58,7 +59,7 @@ public class BlogIndexHandler {
         model.addAttribute("blogPageResult", blogPageResult);
         model.addAttribute("pageName", "首页");
         setIndexMessage(model);
-        return "blog/amaze/index";
+        return "blog/" + WebSiteStyleConfig.style + "/index";
     }
 
     @GetMapping({"/search/{keyword}"})
@@ -75,7 +76,7 @@ public class BlogIndexHandler {
         model.addAttribute("pageUrl", "search");
         model.addAttribute("keyword", keyword);
         setIndexMessage(model);
-        return "blog/amaze/list";
+        return "blog/" + WebSiteStyleConfig.style + "/list";
     }
 
     @GetMapping({"/blog/{blogId}", "/article/{blogId}"})
@@ -89,7 +90,7 @@ public class BlogIndexHandler {
         }
         request.setAttribute("pageName", "详情");
         request.setAttribute("configurations", webSiteConfigService.getAllConfigs());
-        return "blog/amaze/detail";
+        return "blog/" + WebSiteStyleConfig.style + "/detail";
     }
 
     @GetMapping({"/categories"})
@@ -97,7 +98,7 @@ public class BlogIndexHandler {
         model.addAttribute("categories", categoryService.list());
         model.addAttribute("pageName", "分类页面");
         setIndexMessage(model);
-        return "blog/amaze/category";
+        return "blog/" + WebSiteStyleConfig.style + "/category";
     }
 
     @GetMapping({"/tag/{tagName}"})
@@ -113,7 +114,7 @@ public class BlogIndexHandler {
         model.addAttribute("pageUrl", "tag");
         model.addAttribute("keyword", tagName);
         setIndexMessage(model);
-        return "blog/amaze/list";
+        return "blog/" + WebSiteStyleConfig.style + "/list";
     }
 
     @GetMapping({"/category/{categoryName}"})
@@ -134,7 +135,7 @@ public class BlogIndexHandler {
         model.addAttribute("pageUrl", "category");
         model.addAttribute("keyword", categoryName);
         setIndexMessage(model);
-        return "blog/amaze/list";
+        return "blog/" + WebSiteStyleConfig.style + "/list";
     }
 
     @PostMapping(value = "/blog/comment")
@@ -193,7 +194,7 @@ public class BlogIndexHandler {
             }
         }
         request.setAttribute("configurations", webSiteConfigService.getAllConfigs());
-        return "blog/amaze/link";
+        return "blog/" + WebSiteStyleConfig.style + "/link";
     }
 
     @GetMapping({"/{subUrl}"})
@@ -203,9 +204,9 @@ public class BlogIndexHandler {
             request.setAttribute("blogDetailVO", blogDetail);
             request.setAttribute("pageName", subUrl);
             request.setAttribute("configurations", webSiteConfigService.getAllConfigs());
-            return "blog/amaze/detail";
+            return "blog/" + WebSiteStyleConfig.style + "/detail";
         } else {
-            return "error/error_400";
+            return "error/400";
         }
     }
 

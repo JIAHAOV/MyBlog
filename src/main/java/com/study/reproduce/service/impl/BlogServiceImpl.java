@@ -17,6 +17,7 @@ import com.study.reproduce.model.vo.BlogForDisplay;
 import com.study.reproduce.model.vo.SimpleBlogInfo;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.service.BlogTagRelationService;
+import com.study.reproduce.utils.MakeDownUtil;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
 import org.springframework.beans.BeanUtils;
@@ -174,6 +175,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             Category category = categoryMapper.selectById(blog.getBlogCategoryId());
             blogDetail.setBlogCategoryIcon(category.getCategoryIcon());
         }
+        //将 md 转换成 html
+        String htmlContent = MakeDownUtil.convert(blog.getBlogContent());
+        blogDetail.setBlogContent(htmlContent);
         //设置评论数
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("blog_id", blogId);
