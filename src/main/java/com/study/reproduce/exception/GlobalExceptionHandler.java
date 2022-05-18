@@ -2,6 +2,7 @@ package com.study.reproduce.exception;
 
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,6 +29,7 @@ public class GlobalExceptionHandler {
     public String runtimeException(RuntimeException e, HttpServletResponse response, HttpServletRequest request) throws IOException {
         request.getSession().setAttribute("errorMsg", e.getMessage());
         HttpStatus status = getStatus(request);
+        log.error(e.getMessage());
         if (status == HttpStatus.BAD_REQUEST) {
             return "/error/400";
         } else if (status == HttpStatus.NOT_FOUND) {
