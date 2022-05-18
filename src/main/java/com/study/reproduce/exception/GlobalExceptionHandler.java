@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     public String runtimeException(RuntimeException e, HttpServletResponse response, HttpServletRequest request) throws IOException {
         request.getSession().setAttribute("errorMsg", e.getMessage());
         HttpStatus status = getStatus(request);
-        log.error(e.getMessage());
+        e.printStackTrace();
         if (status == HttpStatus.BAD_REQUEST) {
             return "/error/400";
         } else if (status == HttpStatus.NOT_FOUND) {
