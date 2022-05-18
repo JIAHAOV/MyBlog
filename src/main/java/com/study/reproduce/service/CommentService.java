@@ -21,4 +21,6 @@ public interface CommentService extends IService<Comment> {
     boolean checkDone(List<Integer> ids);
 
     boolean reply(Long commentId, String replayMessage);
+
+    PageResult<Comment> getCommentPage(Long blogId, Integer page);
 }

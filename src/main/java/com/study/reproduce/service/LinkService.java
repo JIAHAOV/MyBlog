@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
 
+import java.util.List;
+import java.util.Map;
+
 /**
 * @author 18714
 * @description 针对表【tb_link】的数据库操作Service
@@ -18,4 +21,6 @@ public interface LinkService extends IService<Link> {
      * @return PageResult
      */
     PageResult<Link> queryByPageUtil(PageQueryUtil queryUtil);
+
+    Map<Integer, List<Link>> getLinksForLinkPage();
 }

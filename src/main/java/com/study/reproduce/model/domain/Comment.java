@@ -63,7 +63,7 @@ public class Comment implements Serializable {
     /**
      * 回复时间
      */
-    private Date replyCreateTime;
+    private LocalDateTime replyCreateTime;
 
     /**
      * 是否审核通过 0-未审核 1-审核通过

@@ -28,4 +28,26 @@
         blog_views,enable_comment,is_deleted,
         create_time,update_time
     </sql>
+    <select id="getSimpleBlogInfo" resultType="com.study.reproduce.model.vo.SimpleBlogInfo">
+        SELECT
+            blog_id,
+            blog_title
+        FROM
+            tb_blog
+        WHERE
+            blog_status = 1
+            AND is_deleted = 0
+        <if test="type!=null and type=0">
+            ORDER BY
+            blog_views desc
+        </if>
+        <if test="type!=null and type=1">
+            ORDER BY
+            blog_id desc
+        </if>
+
+        <if test="limit!=null">
+            limit #{limit}
+        </if>
+    </select>
 </mapper>

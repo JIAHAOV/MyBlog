@@ -27,7 +27,7 @@
                                     </div>
                                 </div>
                                 <span class="pull-right time pc_time"
-                                      th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd')}">2019-01</span>
+                                      th:text="${#temporals.format(blog.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-01</span>
                             </div>
                             <h1 class="post-index-title"><a itemtype="url" th:href="@{'/blog/' + ${blog.blogId}}">
                                 <th:block th:text="${blog.blogTitle}"></th:block>

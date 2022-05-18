@@ -1,8 +1,11 @@
 package com.study.reproduce.mapper;
 
+import com.study.reproduce.model.vo.BlogTagCount;
 import com.study.reproduce.model.domain.BlogTagRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
 * @author 18714
@@ -12,7 +15,7 @@ import org.apache.ibatis.annotations.Mapper;
 */
 @Mapper
 public interface BlogTagRelationMapper extends BaseMapper<BlogTagRelation> {
-
+    List<BlogTagCount> getBlogTagCount();
 }
 
 

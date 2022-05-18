@@ -1,5 +1,6 @@
 package com.study.reproduce.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -71,6 +72,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
                 .eq("comment_id", commentId);
         int update = commentMapper.update(comment, updateWrapper);
         return update > 0;
+    }
+
+    @Override
+    public PageResult<Comment> getCommentPage(Long blogId, Integer page) {
+        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+        Page<Comment> commentPage = new Page<>(page, 8);
+        wrapper.eq("blog_id", blogId)
+                .eq("comment_status", 1);
+        Long totalCount = commentMapper.selectCount(wrapper);
+        Page<Comment> selectPage = commentMapper.selectPage(commentPage, wrapper);
+        PageResult<Comment> pageResult = new PageResult<>();
+        pageResult.setList(selectPage.getRecords());
+        pageResult.setCurrPage(page);
+        pageResult.setPageSize(8);
+        pageResult.setTotalCount(totalCount);
+        return pageResult;
     }
 }
 

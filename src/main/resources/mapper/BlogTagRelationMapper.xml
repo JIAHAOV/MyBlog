@@ -15,4 +15,20 @@
         relation_id,blog_id,tag_id,
         create_time
     </sql>
+    <select id="getBlogTagCount" resultType="com.study.reproduce.model.vo.BlogTagCount">
+        SELECT
+            relation.tag_id,
+            count( relation.tag_id ) as tag_count,
+            tag_name
+        FROM
+            tb_blog_tag_relation relation
+            INNER JOIN tb_blog_tag tag
+        WHERE
+            relation.tag_id = tag.tag_id
+            and tag.is_deleted = 0
+        GROUP BY
+            relation.tag_id
+        ORDER BY
+            tag_count DESC
+    </select>
 </mapper>

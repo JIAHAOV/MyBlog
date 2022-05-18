@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -69,22 +68,6 @@ public class BlogHandler {
             return ResultGenerator.getSuccessResult("删除成功");
         } else {
             throw ExceptionManager.genException("删除失败");
-        }
-    }
-
-    @GetMapping("/blogs/{fileName}")
-    public void getBlogCover(@PathVariable String fileName, HttpServletResponse response) {
-        File file = FileUtil.getLoadFile(BlogHandler.class, fileName);
-        response.setHeader("Cache-Control", "no-store");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("image/jpeg");
-        try {
-            BufferedImage image = ImageIO.read(file);
-            ImageIO.write(image, "jpg", response.getOutputStream());
-        } catch (IOException e) {
-            //TODO 异常处理
-            e.printStackTrace();
         }
     }
 

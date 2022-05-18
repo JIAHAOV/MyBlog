@@ -1,26 +1,25 @@
 package com.study.reproduce.service.impl;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.exception.ExceptionManager;
-import com.study.reproduce.mapper.BlogTagRelationMapper;
 import com.study.reproduce.mapper.CategoryMapper;
-import com.study.reproduce.mapper.TagMapper;
-import com.study.reproduce.model.domain.Blog;
+import com.study.reproduce.mapper.CommentMapper;
+import com.study.reproduce.model.domain.*;
 import com.study.reproduce.mapper.BlogMapper;
-import com.study.reproduce.model.domain.BlogTagRelation;
-import com.study.reproduce.model.domain.Category;
-import com.study.reproduce.model.domain.Tag;
+import com.study.reproduce.model.vo.BlogDetail;
+import com.study.reproduce.model.vo.BlogForDisplay;
+import com.study.reproduce.model.vo.SimpleBlogInfo;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.service.BlogTagRelationService;
-import com.study.reproduce.service.TagService;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +34,13 @@ import javax.annotation.Resource;
 public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     implements BlogService {
 
+    private static final Integer SIZE = 9;
+    private static final String DEFAULT_ICON = "/admin/dist/img/category/01.png";
+
     @Resource
     BlogMapper blogMapper;
+    @Resource
+    CommentMapper commentMapper;
     @Resource
     CategoryMapper categoryMapper;
     @Resource
@@ -44,7 +48,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
 
     @Override
     public PageResult<Blog> queryByPageUtil(PageQueryUtil queryUtil) {
-        Page<Blog> page = new Page<>(queryUtil.getStart(), queryUtil.getLimit());
+        Page<Blog> page = new Page<>(queryUtil.getPage(), queryUtil.getLimit());
 //        page.addOrder(OrderItem.desc("blog_id"));
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         if (queryUtil.getKeyword() != null) {
@@ -111,6 +115,106 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             }
         }
         return this.removeByIds(ids);
+    }
+
+    @Override
+    public List<SimpleBlogInfo> getSimpleBlogInfoIndex(Integer type) {
+        List<SimpleBlogInfo> simpleBlogInfo = blogMapper.getSimpleBlogInfo(type, 9);
+        return simpleBlogInfo;
+    }
+
+    @Override
+    public PageResult<BlogForDisplay> getBlogsForIndexPage(Integer page) {
+        Page<Blog> blogPage = new Page<>(page, SIZE);
+        blogPage.addOrder(OrderItem.desc("blog_id"));
+        //查询出一页文章信息
+        List<Blog> blogList = blogMapper.selectPage(blogPage, null).getRecords();
+        //用来在主页展示的文章对象的集合
+        ArrayList<BlogForDisplay> displays = new ArrayList<>();
+        List<Category> categories = categoryMapper.selectList(null);
+        //提取出 category 的 id 和 icon 映射成 map
+        Map<Integer, String> categoryMap = categories.stream()
+                .collect(Collectors.toMap(Category::getCategoryId, Category::getCategoryIcon));
+        for (Blog blog : blogList) {
+            BlogForDisplay blogForDisplay = new BlogForDisplay();
+            //将blog中的相应属性复制到展示用blog
+            BeanUtils.copyProperties(blog, blogForDisplay);
+            if (categoryMap.containsKey(blogForDisplay.getBlogCategoryId())) {
+                //设置 icon 属性
+                blogForDisplay.setBlogCategoryIcon(categoryMap.get(blogForDisplay.getBlogCategoryId()));
+            } else {
+                //没有就设置默认属性
+                blogForDisplay.setBlogCategoryId(0);
+                blogForDisplay.setBlogCategoryName("默认分类");
+                blogForDisplay.setBlogCategoryIcon(DEFAULT_ICON);
+            }
+            displays.add(blogForDisplay);
+        }
+        Long totalCount = blogMapper.selectCount(null);
+        PageResult<BlogForDisplay> pageResult = new PageResult<>();
+        pageResult.setCurrPage(page);
+        pageResult.setPageSize(SIZE);
+        pageResult.setTotalCount(totalCount);
+        pageResult.setList(displays);
+        return pageResult;
+    }
+
+    @Override
+    public BlogDetail getBlogDetail(Long blogId) {
+        Blog blog = blogMapper.selectById(blogId);
+        BlogDetail blogDetail = new BlogDetail();
+        BeanUtils.copyProperties(blog, blogDetail);
+        //设置标签
+        String[] tags = blog.getBlogTags().split(",");
+        blogDetail.setBlogTags(Arrays.asList(tags));
+        //设置分类Icon
+        if (blog.getBlogCategoryId() == 0) {
+            blogDetail.setBlogCategoryIcon(DEFAULT_ICON);
+        } else {
+            Category category = categoryMapper.selectById(blog.getBlogCategoryId());
+            blogDetail.setBlogCategoryIcon(category.getCategoryIcon());
+        }
+        //设置评论数
+        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+        wrapper.eq("blog_id", blogId);
+        Long blogCommentCount = commentMapper.selectCount(wrapper);
+        blogDetail.setCommentCount(blogCommentCount);
+        return blogDetail;
+    }
+
+    @Override
+    public PageResult<Blog> getBlogsPageByTypeName(String typeName, Integer page, Integer type) {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+        if (type == 0) {
+            wrapper.like("blog_tags", typeName);
+        } else {
+            wrapper.eq("blog_category_name", typeName);
+        }
+        Page<Blog> blogPage = new Page<>(page, 9);
+        Page<Blog> selectPage = blogMapper.selectPage(blogPage, wrapper);
+        Long totalCount = blogMapper.selectCount(wrapper);
+        PageResult<Blog> pageResult = new PageResult<>();
+        pageResult.setList(selectPage.getRecords());
+        pageResult.setPageSize(9);
+        pageResult.setCurrPage(page);
+        pageResult.setTotalCount(totalCount);
+        return pageResult;
+    }
+
+    @Override
+    public BlogForDisplay getBlogDetailBySubUrl(String subUrl) {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+        wrapper.eq("blog_sub_url", subUrl);
+        BlogForDisplay blogForDisplay = new BlogForDisplay();
+        Blog blog = blogMapper.selectOne(wrapper);
+        BeanUtils.copyProperties(blog, blogForDisplay);
+        if (blog.getBlogCategoryId() == 0) {
+            blogForDisplay.setBlogCategoryIcon(DEFAULT_ICON);
+        } else {
+            Category category = categoryMapper.selectById(blog.getBlogCategoryId());
+            blogForDisplay.setBlogCategoryIcon(category.getCategoryIcon());
+        }
+        return blogForDisplay;
     }
 }
 

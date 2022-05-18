@@ -8,7 +8,7 @@ public class URIUtil {
         URI result = null;
         try {
             result = new URI(uri.getScheme(), null, uri.getHost(),
-                    uri.getPort(), "/admin/blogs/" + filename, null, null);
+                    uri.getPort(), "/image/blogs/" + filename, null, null);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

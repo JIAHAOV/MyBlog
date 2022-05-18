@@ -28,4 +28,10 @@ public class PageQueryUtil {
         this(pageParam.getPage(), pageParam.getLimit());
         this.keyword = pageParam.getKeyword();
     }
+
+    public PageQueryUtil(String keyword, Integer page) {
+        this.keyword = keyword;
+        this.page = page;
+        this.limit = 9;
+    }
 }

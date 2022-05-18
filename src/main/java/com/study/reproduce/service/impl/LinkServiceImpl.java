@@ -1,5 +1,8 @@
 package com.study.reproduce.service.impl;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,6 +39,13 @@ public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link>
         pageResult.setPageSize(queryUtil.getLimit());
         pageResult.setTotalCount(totalCount);
         return pageResult;
+    }
+
+    @Override
+    public Map<Integer, List<Link>> getLinksForLinkPage() {
+        List<Link> linkList = linkMapper.selectList(null);
+        Map<Integer, List<Link>> linkMap = linkList.stream().collect(Collectors.groupingBy(Link::getLinkType));
+        return linkMap;
     }
 }
 

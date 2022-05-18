@@ -38,10 +38,10 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         }
         //TODO 验证是否有特殊字符
         Object loginVerifyCode = session.getAttribute(VerifyCode.VERIFY_CODE_KEY);
-//        if (loginVerifyCode == null || !loginVerifyCode.equals(verifyCode)) {
-//            session.setAttribute("errorMsg", "验证码错误");
-//            return null;
-//        }
+        if (loginVerifyCode == null || !loginVerifyCode.equals(verifyCode)) {
+            session.setAttribute("errorMsg", "验证码错误");
+            return null;
+        }
         QueryWrapper<Admin> wrapper = new QueryWrapper<Admin>();
         wrapper.eq("login_user_name", account);
         Admin admin = adminMapper.selectOne(wrapper);

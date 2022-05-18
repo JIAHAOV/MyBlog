@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Blog;
+import com.study.reproduce.model.vo.BlogTagCount;
 import com.study.reproduce.model.domain.BlogTagRelation;
 import com.study.reproduce.model.domain.Tag;
 import com.study.reproduce.service.BlogTagRelationService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
 * @author 18714
@@ -26,6 +28,10 @@ public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMappe
 
     @Resource
     TagService tagService;
+
+    @Resource
+    BlogTagRelationMapper blogTagRelationMapper;
+
     @Override
     public boolean updateBlogTagRelation(Blog blog) {
         //获取所有标签
@@ -63,6 +69,11 @@ public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMappe
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<BlogTagCount> getBlogTagCountIndex() {
+        return blogTagRelationMapper.getBlogTagCount();
     }
 }
 

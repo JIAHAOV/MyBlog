@@ -2,7 +2,11 @@ package com.study.reproduce.mapper;
 
 import com.study.reproduce.model.domain.Blog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.study.reproduce.model.vo.SimpleBlogInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author 18714
@@ -13,6 +17,13 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface BlogMapper extends BaseMapper<Blog> {
 
+    /**
+     * 查询博客的简单信息并排序
+     * @param type 0:点击率排序、1：创建时间排序
+     * @param limit 查询个数
+     * @return 查询结果
+     */
+    List<SimpleBlogInfo> getSimpleBlogInfo(@Param("type") Integer type, @Param("limit") Integer limit);
 }
 
 
