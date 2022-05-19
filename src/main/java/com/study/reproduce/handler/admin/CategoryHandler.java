@@ -1,6 +1,6 @@
 package com.study.reproduce.handler.admin;
 
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Category;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.CategoryService;
@@ -24,7 +24,7 @@ public class CategoryHandler {
     @GetMapping("/categories/list")
     public Result list(PageParam pageParam) {
         if (pageParam == null && pageParam.getLimit() == null) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         PageResult<Category> pageResult = categoryService.queryCategoryPage(pageParam.getPage(), pageParam.getLimit());
         return ResultGenerator.getSuccessResult(pageResult);
@@ -41,7 +41,7 @@ public class CategoryHandler {
         if (result) {
             return ResultGenerator.getSuccessResult();
         } else {
-            throw ExceptionManager.genException("新增失败");
+            throw ExceptionGenerator.businessError("新增失败");
         }
     }
 
@@ -57,7 +57,7 @@ public class CategoryHandler {
         if (result) {
             return ResultGenerator.getSuccessResult();
         } else {
-            throw ExceptionManager.genException("修改失败");
+            throw ExceptionGenerator.businessError("修改失败");
         }
     }
 
@@ -74,7 +74,7 @@ public class CategoryHandler {
         if (result) {
             return ResultGenerator.getSuccessResult();
         } else {
-            throw ExceptionManager.genException("删除失败");
+            throw ExceptionGenerator.businessError("删除失败");
         }
     }
 
@@ -83,13 +83,13 @@ public class CategoryHandler {
      */
     public void checkCategoryInfo(Category category) {
         if (category == null) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         if (category.getCategoryIcon().isEmpty()) {
-            throw ExceptionManager.genException("请选择分类图标");
+            throw ExceptionGenerator.businessError("请选择分类图标");
         }
         if (category.getCategoryName().isEmpty()) {
-            throw ExceptionManager.genException("请输入名称");
+            throw ExceptionGenerator.businessError("请输入名称");
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.study.reproduce.handler.index;
 
 import com.study.reproduce.confiig.WebSiteStyleConfig;
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.domain.Comment;
 import com.study.reproduce.model.domain.Link;
@@ -142,36 +142,36 @@ public class BlogIndexHandler {
     @ResponseBody
     public Result comment(HttpServletRequest request, String verifyCode, Comment comment) {
         if (StringUtils.isBlank(verifyCode)) {
-            throw ExceptionManager.genException("验证码不能为空");
+            throw ExceptionGenerator.businessError("验证码不能为空");
         }
         String captchaCode = request.getSession().getAttribute("verifyCode") + "";
         String ref = request.getHeader("Referer");
         if (StringUtils.isAnyBlank(captchaCode, ref)) {
-            throw ExceptionManager.genException("非法请求");
+            throw ExceptionGenerator.businessError("非法请求");
         }
         if (!verifyCode.equals(captchaCode)) {
-            throw ExceptionManager.genException("验证码错误");
+            throw ExceptionGenerator.businessError("验证码错误");
         }
         if (comment.getBlogId() == null || comment.getBlogId() < 0) {
-            throw ExceptionManager.genException("非法请求");
+            throw ExceptionGenerator.businessError("非法请求");
         }
         if (StringUtils.isBlank(comment.getCommentator())) {
-            throw ExceptionManager.genException("请输入称呼");
+            throw ExceptionGenerator.businessError("请输入称呼");
         }
         if (StringUtils.isBlank(comment.getEmail())) {
-            throw ExceptionManager.genException("请输入邮箱地址");
+            throw ExceptionGenerator.businessError("请输入邮箱地址");
         }
         if (!PatternUtil.isEmail(comment.getEmail())) {
-            throw ExceptionManager.genException("请输入正确的邮箱地址");
+            throw ExceptionGenerator.businessError("请输入正确的邮箱地址");
         }
         if (!StringUtils.isBlank(comment.getWebsiteUrl()) && !PatternUtil.isURL(comment.getWebsiteUrl())) {
-            throw ExceptionManager.genException("请输入正确的网址");
+            throw ExceptionGenerator.businessError("请输入正确的网址");
         }
         if (StringUtils.isBlank(comment.getCommentBody())) {
-            throw ExceptionManager.genException("请输入评论内容");
+            throw ExceptionGenerator.businessError("请输入评论内容");
         }
         if (comment.getCommentBody().trim().length() > 200) {
-            throw ExceptionManager.genException("评论内容过长");
+            throw ExceptionGenerator.businessError("评论内容过长");
         }
         boolean result = commentService.save(comment);
         return ResultGenerator.getSuccessResult(result);

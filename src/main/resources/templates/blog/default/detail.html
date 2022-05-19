@@ -123,7 +123,7 @@
                                         <img th:src="@{${configurations.get('yourAvatar')}}"
                                              style="float: left;border-radius: 100px;width: 50px;">
                                         <div class="meta2">
-                                            <h3 th:text="${configurations.get('yourName')}">十三</h3>
+                                            <h3 th:text="${configurations.get('yourName')}"admin</h3>
                                             <span class="date">
                                         回复时间： <th:block
                                                     th:text="${#temporals.format(comment.replyCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
@@ -193,8 +193,8 @@
                             <div class="col-md-6">
                                 <div class="col-md-4">
                                     <img alt="单击图片刷新！" class="pointer" style="margin-top: 15px; border-radius: 25px;"
-                                         th:src="@{/common/kaptcha}"
-                                         onclick="this.src='/common/kaptcha?d='+new Date()*1">
+                                         th:src="@{/common/captcha}"
+                                         onclick="this.src='/common/captcha?d='+new Date()*1">
                                 </div>
                                 <div class="col-md-8">
                                     <input type="text" class="form-control input-lg" name="verifyCode" id="verifyCode"

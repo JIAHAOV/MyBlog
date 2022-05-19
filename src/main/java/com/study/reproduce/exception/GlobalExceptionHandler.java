@@ -20,12 +20,18 @@ import java.io.IOException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
+    @ExceptionHandler(BusinessException.class)
     @ResponseBody
-    public Result customException(CustomException e, HttpSession session) {
+    public Result customException(BusinessException e, HttpSession session) {
         Result failResult = ResultGenerator.getFailResult(e.getMessage(), e.getErrorCode());
         session.setAttribute("errorMsg", e.getMessage());
         return failResult;
+    }
+
+    @ExceptionHandler(PageNotFoundException.class)
+    public String pageNotFoundException(RuntimeException e) {
+        e.printStackTrace();
+        return "/error/404";
     }
 
     @ExceptionHandler(RuntimeException.class)

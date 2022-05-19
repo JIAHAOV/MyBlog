@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomException extends RuntimeException{
+public class BusinessException extends RuntimeException{
     private String message;
     private Integer errorCode;
 
-    public CustomException(String message) {
+    public BusinessException(String message) {
         this.message = message;
     }
 }

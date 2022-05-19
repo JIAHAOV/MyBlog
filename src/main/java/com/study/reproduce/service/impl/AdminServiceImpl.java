@@ -4,14 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.constant.VerifyCode;
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.service.AdminService;
 import com.study.reproduce.mapper.AdminMapper;
 import com.study.reproduce.utils.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -76,7 +75,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     @Override
     public boolean updatePassword(Integer adminUserId, String originalPassword, String newPassword) {
         if (adminUserId == null || StringUtils.isAnyEmpty(originalPassword, newPassword)) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         UpdateWrapper<Admin> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("login_password", MD5Util.encryptPassword(newPassword))
@@ -88,7 +87,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     @Override
     public boolean updateName(Integer adminUserId, String loginUserName, String nickName) {
         if (adminUserId == null || StringUtils.isAnyEmpty(loginUserName, nickName)) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         UpdateWrapper<Admin> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("login_user_name", loginUserName)

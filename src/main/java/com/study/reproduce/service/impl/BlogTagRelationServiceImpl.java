@@ -2,7 +2,7 @@ package com.study.reproduce.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.vo.BlogTagCount;
 import com.study.reproduce.model.domain.BlogTagRelation;
@@ -37,7 +37,7 @@ public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMappe
         //获取所有标签
         String[] tagNames = blog.getBlogTags().split(",");
         if (tagNames.length > 6) {
-            throw ExceptionManager.genException("标签上限为6个");
+            throw ExceptionGenerator.businessError("标签上限为6个");
         }
         ArrayList<Tag> tags = new ArrayList<>();
         ArrayList<Tag> newTags = new ArrayList<>();

@@ -1,8 +1,7 @@
 package com.study.reproduce.utils;
 
 import com.study.reproduce.constant.FileConstant;
-import com.study.reproduce.exception.ExceptionManager;
-import com.study.reproduce.handler.admin.UploadFileHandler;
+import com.study.reproduce.exception.ExceptionGenerator;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +22,7 @@ public class FileUtil {
         if (!path.exists()) {
             boolean mkdirs = path.mkdirs();
             if (!mkdirs) {
-                throw ExceptionManager.genException("文件创建失败");
+                throw ExceptionGenerator.businessError("文件创建失败");
             }
         }
         String fileName = UUID.randomUUID().toString() + "_" + originalFilename;

@@ -1,6 +1,6 @@
 package com.study.reproduce.handler.admin;
 
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Tag;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.TagService;
@@ -24,7 +24,7 @@ public class TagHandler {
     @GetMapping("/tags/list")
     public Result list(PageParam pageParam) {
         if (pageParam.getPage() == null || pageParam.getLimit() == null) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         PageQueryUtil queryUtil = new PageQueryUtil(pageParam);
         PageResult<Tag> pageResult = tagService.queryByPageUtil(queryUtil);
@@ -34,24 +34,24 @@ public class TagHandler {
     @PostMapping("/tags/save")
     public Result save(String tagName) {
         if (tagName.isEmpty()) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         if (tagService.saveTag(tagName)) {
             return ResultGenerator.getSuccessResult("新增成功");
         } else {
-            throw ExceptionManager.genException("新增失败");
+            throw ExceptionGenerator.businessError("新增失败");
         }
     }
 
     @PostMapping("/tags/delete")
     public Result delete(@RequestBody Integer[] ids) {
         if (ids.length == 0) {
-            throw ExceptionManager.genException("参数错误");
+            throw ExceptionGenerator.businessError("参数错误");
         }
         if (tagService.removeBatchTags(ids)) {
             return ResultGenerator.getSuccessResult("删除成功");
         } else {
-            throw ExceptionManager.genException("删除失败");
+            throw ExceptionGenerator.businessError("删除失败");
         }
     }
 }

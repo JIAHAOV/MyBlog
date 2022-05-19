@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.study.reproduce.exception.ExceptionManager;
+import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.mapper.CategoryMapper;
 import com.study.reproduce.mapper.CommentMapper;
 import com.study.reproduce.model.domain.*;
@@ -78,7 +78,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         //新增
         int insert = blogMapper.insert(blog);
         if (insert <= 0) {
-            throw ExceptionManager.genException("更新失败");
+            throw ExceptionGenerator.businessError("更新失败");
         }
         //同步标签和博客之间的关系
         return blogTagRelationService.updateBlogTagRelation(blog);
@@ -89,7 +89,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     public boolean updateBlog(Blog blog) {
         Blog oldBlog = blogMapper.selectById(blog.getBlogId());
         if (oldBlog == null) {
-            throw ExceptionManager.genException("查找不到该博客");
+            throw ExceptionGenerator.businessError("查找不到该博客");
         }
         //检测分类是否改变
         if (!oldBlog.getBlogCategoryId().equals(blog.getBlogCategoryId())) {
@@ -163,6 +163,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Override
     public BlogDetail getBlogDetail(Long blogId) {
         Blog blog = blogMapper.selectById(blogId);
+        blog.setBlogViews(blog.getBlogViews() + 1);
+        blogMapper.updateById(blog);
         BlogDetail blogDetail = new BlogDetail();
         BeanUtils.copyProperties(blog, blogDetail);
         //设置标签
@@ -211,6 +213,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         wrapper.eq("blog_sub_url", subUrl);
         BlogForDisplay blogForDisplay = new BlogForDisplay();
         Blog blog = blogMapper.selectOne(wrapper);
+        if (blog == null) {
+            throw ExceptionGenerator.pageNotFound("资源不存在");
+        }
         BeanUtils.copyProperties(blog, blogForDisplay);
         if (blog.getBlogCategoryId() == 0) {
             blogForDisplay.setBlogCategoryIcon(DEFAULT_ICON);
