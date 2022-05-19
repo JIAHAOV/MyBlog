@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+/**
+ * 全局异常处理
+ */
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {

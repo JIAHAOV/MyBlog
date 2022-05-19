@@ -1,5 +1,6 @@
 package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.confiig.WebSiteStyleConfig;
 import com.study.reproduce.constant.WebSiteConfigId;
 import com.study.reproduce.model.domain.WebSiteConfig;
 import com.study.reproduce.model.request.FooterInfoParam;
@@ -46,6 +47,13 @@ public class WebSiteConfigHandler {
             webSiteConfig.setConfigId(WebSiteConfigId.WEBSITE_NAME);
             webSiteConfig.setConfigValue(websiteInfoParam.getWebsiteName());
             webSiteConfigs.add(webSiteConfig);
+        }
+        if (!websiteInfoParam.getWebsiteStyle().isEmpty()) {
+            WebSiteConfig webSiteConfig = new WebSiteConfig();
+            webSiteConfig.setConfigId(WebSiteConfigId.WEBSITE_STYLE);
+            webSiteConfig.setConfigValue(websiteInfoParam.getWebsiteStyle());
+            webSiteConfigs.add(webSiteConfig);
+            WebSiteStyleConfig.changeStyle(websiteInfoParam.getWebsiteStyle());
         }
         boolean result = webSiteConfigService.updateBatchById(webSiteConfigs);
         if (result) {

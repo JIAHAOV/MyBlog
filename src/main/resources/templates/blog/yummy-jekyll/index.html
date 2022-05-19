@@ -28,7 +28,7 @@
                                 </p>
                                 <p class="post-list-meta">
                                     <span class="octicon octicon-calendar"
-                                          th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd')}"></span>
+                                          th:text="${#temporals.format(blog.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
                                 </p>
                             </li>
                         </th:block>

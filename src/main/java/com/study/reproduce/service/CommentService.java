@@ -16,11 +16,33 @@ import java.util.List;
 */
 public interface CommentService extends IService<Comment> {
 
+    /**
+     * 一页页查询评论
+     * @param pageParam pageParam
+     * @return 查询结果
+     */
     PageResult<Comment> queryByPage(PageParam pageParam);
 
+    /**
+     * 审核通过评论
+     * @param ids 通过的评论id
+     * @return 是否成功
+     */
     boolean checkDone(List<Integer> ids);
 
+    /**
+     * 回复评论
+     * @param commentId 回复的评论的id
+     * @param replayMessage 回复的内容
+     * @return 是否成功
+     */
     boolean reply(Long commentId, String replayMessage);
 
+    /**
+     * 一页页查询某个文章的评论
+     * @param blogId 文章id
+     * @param page 当前页
+     * @return 查询结果
+     */
     PageResult<Comment> getCommentPage(Long blogId, Integer page);
 }

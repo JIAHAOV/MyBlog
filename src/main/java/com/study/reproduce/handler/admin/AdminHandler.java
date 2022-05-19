@@ -1,6 +1,5 @@
 package com.study.reproduce.handler.admin;
 
-import com.study.reproduce.exception.ExceptionManager;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.model.request.AdminLoginData;
 import com.study.reproduce.service.*;
@@ -56,6 +55,13 @@ public class AdminHandler {
         return "修改失败";
     }
 
+    /**
+     * 修改名称
+     * @param request
+     * @param loginUserName
+     * @param nickName
+     * @return
+     */
     @PostMapping("/profile/name")
     public String nameUpdate(HttpServletRequest request, String loginUserName, String nickName) {
         if (StringUtils.isAnyBlank(loginUserName, nickName)) {

@@ -41,7 +41,7 @@
                                     <span data-toggle="tooltip" class="meta-info">
                                         <span class="octicon octicon-clock">
                                             &nbsp;&nbsp;<th:block
-                                                th:text="${#dates.format(category.createTime, 'yyyy-MM-dd')}"></th:block>
+                                                th:text="${#temporals.format(category.createTime,'yyyy-MM-dd HH:mm:ss')}"></th:block>
                                         </span>
                                     </span>
                                         </div>

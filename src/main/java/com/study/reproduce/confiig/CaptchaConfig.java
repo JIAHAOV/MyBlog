@@ -21,6 +21,10 @@ public class CaptchaConfig {
     private String imageHeight = "40";
     private String sessionKey = "verifyCode";
 
+    /**
+     * 配置验证码属性
+     * @return DefaultKaptcha
+     */
     @Bean
     public DefaultKaptcha defaultKaptcha() {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();

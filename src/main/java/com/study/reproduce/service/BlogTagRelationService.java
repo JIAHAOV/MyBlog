@@ -16,14 +16,14 @@ public interface BlogTagRelationService extends IService<BlogTagRelation> {
 
     /**
      * 存储新增标签，并同步标签和博客之间的关系
-     * @param blog
-     * @return
+     * @param blog 与之相关的blog
+     * @return 是否成功
      */
     boolean updateBlogTagRelation(Blog blog);
 
     /**
      * 获取每个标签在所有博客中的个数
-     * @return
+     * @return 查询结果
      */
     List<BlogTagCount> getBlogTagCountIndex();
 }

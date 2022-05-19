@@ -10,7 +10,7 @@
                 <h2 th:text="${blogDetailVO.blogTitle}">标题</h2>
                 <span class="meta-info">
                         <span class="octicon octicon-calendar">&nbsp;<th:block
-                                th:text="${#dates.format(blogDetailVO.createTime, 'yyyy-MM-dd')}"></th:block></span>
+                                th:text="${#temporals.format(blogDetailVO.createTime,'yyyy-MM-dd HH:mm:ss')}"></th:block></span>
                     &nbsp;&nbsp;<span class="octicon octicon-comment">&nbsp;<th:block
                         th:text="${blogDetailVO.commentCount}"></th:block> 条评论</span>
                     &nbsp;&nbsp;<span class="octicon octicon-eye-watch">&nbsp;<th:block
@@ -47,7 +47,7 @@
                                         <h4 th:text="${comment.commentator}"></h4>
                                         <span class="date">
                                        评论时间：<th:block
-                                                th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
+                                                th:text="${#temporals.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
                                     </span>
                                     </div>
                                 </header>
@@ -64,7 +64,7 @@
                                             <h4 th:text="${configurations.get('yourName')}">十三</h4>
                                             <span class="date">
                                         回复时间： <th:block
-                                                    th:text="${#dates.format(comment.replyCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
+                                                    th:text="${#temporals.format(comment.replyCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
                                     </span>
 
                                         </div>

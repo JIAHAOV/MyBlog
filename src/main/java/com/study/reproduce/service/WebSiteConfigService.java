@@ -21,5 +21,9 @@ public interface WebSiteConfigService extends IService<WebSiteConfig> {
      */
     boolean setConfigMessage(HttpSession session, Model model);
 
+    /**
+     * 获取所有的配置
+     * @return 查询结果
+     */
     Map<String, String> getAllConfigs();
 }

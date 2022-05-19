@@ -13,9 +13,25 @@ import java.util.List;
 */
 public interface CategoryService extends IService<Category> {
 
+    /**
+     * 获取页数种类
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return 查询结果
+     */
     PageResult<Category> queryCategoryPage(int currentPage, int pageSize);
 
+    /**
+     * 批量删除
+     * @param ids 需要删除的 id
+     * @return 是否成功
+     */
     boolean deleteByIds(List<Integer> ids);
 
+    /**
+     * 存储 category
+     * @param category category
+     * @return 是否成功
+     */
     boolean saveCategory(Category category);
 }

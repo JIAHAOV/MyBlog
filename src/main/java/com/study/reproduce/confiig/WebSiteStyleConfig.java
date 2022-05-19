@@ -1,19 +1,24 @@
 package com.study.reproduce.confiig;
 
+
 public class WebSiteStyleConfig {
     public static String style = "amaze";
 
-    public static void changeStyle(Integer type) {
-        if (type == null) {
+    /**
+     * 修改网站风格
+     * @param type 类型
+     */
+    public static void changeStyle(String type) {
+        if (type.isEmpty()) {
             return;
         }
-        if (type == 0) {
+        if ("0".equals(type)) {
             style = "amaze";
         }
-        if (type == 1) {
+        if ("1".equals(type)) {
             style = "default";
         }
-        if (type == 2) {
+        if ("2".equals(type)) {
             style = "yummy-jekyll";
         }
     }

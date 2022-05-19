@@ -55,8 +55,8 @@ public interface BlogService extends IService<Blog> {
 
     /**
      * 获取主页展示用的 blog 集合
-     * @param page
-     * @return
+     * @param page 当前页
+     * @return 查询结果
      */
     PageResult<BlogForDisplay> getBlogsForIndexPage(Integer page);
 
@@ -72,9 +72,14 @@ public interface BlogService extends IService<Blog> {
      * @param typeName 对应名称
      * @param page 当前页
      * @param type 0：按标签名查找、1：按类型名查找
-     * @return
+     * @return 查询结果
      */
     PageResult<Blog> getBlogsPageByTypeName(String typeName, Integer page, Integer type);
 
+    /**
+     * 根据自定义的SubUrl查找文章
+     * @param subUrl 自定义路径
+     * @return 查询结果
+     */
     BlogForDisplay getBlogDetailBySubUrl(String subUrl);
 }

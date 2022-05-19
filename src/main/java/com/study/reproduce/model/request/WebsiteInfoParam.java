@@ -12,4 +12,5 @@ public class WebsiteInfoParam {
     private String websiteIcon;
     private String websiteLogo;
     private String websiteName;
+    private String websiteStyle;
 }

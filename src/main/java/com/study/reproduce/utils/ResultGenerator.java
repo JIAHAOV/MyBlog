@@ -1,11 +1,20 @@
 package com.study.reproduce.utils;
 
+/**
+ * 快速获取 Result
+ */
 public class ResultGenerator {
     private static final String DEFAULT_SUCCESS_MESSAGE = "SUCCESS";
     private static final String DEFAULT_FAIL_MESSAGE = "FAIL";
     private static final int RESULT_CODE_SUCCESS = 200;
     private static final int RESULT_CODE_SERVER_ERROR = 500;
 
+    /**
+     * 获取带数据的 Result
+     * @param data 数据
+     * @param <T> 数据类型
+     * @return Result
+     */
     public static <T> Result<T> getSuccessResult(T data) {
         Result<T> result = new Result<T>();
         result.setData(data);
@@ -13,7 +22,6 @@ public class ResultGenerator {
         result.setResultCode(RESULT_CODE_SUCCESS);
         return result;
     }
-
 
     public static Result getSuccessResult() {
         Result result = new Result();

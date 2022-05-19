@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 封装分页的查询结果
+ * @param <T> 保存的数据类型
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

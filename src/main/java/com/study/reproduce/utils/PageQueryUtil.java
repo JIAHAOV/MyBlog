@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 用来辅助一页页的查询数据
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

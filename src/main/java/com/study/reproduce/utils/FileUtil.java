@@ -10,6 +10,12 @@ import java.io.File;
 import java.util.UUID;
 
 public class FileUtil {
+    /**
+     * 根据接收的multipartFile在本地创建存储用的file
+     * @param location 当前类
+     * @param multipartFile 接收的multipartFile
+     * @return 创建的file
+     */
     public static File getUploadFile(Class location, MultipartFile multipartFile) {
         String originalPath = getOriginalPath(location);
         String originalFilename = multipartFile.getOriginalFilename();
@@ -25,6 +31,12 @@ public class FileUtil {
         return file;
     }
 
+    /**
+     * 根据文件名，获取下载的文件
+     * @param location 当前类
+     * @param fileName 文件名
+     * @return 下载的文件
+     */
     public static File getLoadFile(Class location, String fileName) {
         String originalPath = getOriginalPath(location);
         String filePath = originalPath + File.separator + FileConstant.FILE_UPLOAD_DIC + File.separator + fileName;
@@ -32,6 +44,11 @@ public class FileUtil {
         return file;
     }
 
+    /**
+     * 获取资源路径
+     * @param location 当前类
+     * @return 资源路径
+     */
     public static String getOriginalPath(Class location) {
         return new ApplicationHome(location).getSource().getParentFile().toString();
     }

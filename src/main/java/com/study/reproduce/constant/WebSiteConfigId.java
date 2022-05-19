@@ -1,5 +1,8 @@
 package com.study.reproduce.constant;
 
+/**
+ * 网站配置对应的主键ID
+ */
 public interface WebSiteConfigId {
     Integer FOOTER_ABOUT = 1;
     Integer FOOTER_COPY_RIGHT = 2;
@@ -13,4 +16,5 @@ public interface WebSiteConfigId {
     Integer AVATAR = 10;
     Integer EMAIL = 11;
     Integer NAME = 12;
+    Integer WEBSITE_STYLE = 13;
 }

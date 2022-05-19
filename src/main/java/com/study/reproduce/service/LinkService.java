@@ -22,5 +22,9 @@ public interface LinkService extends IService<Link> {
      */
     PageResult<Link> queryByPageUtil(PageQueryUtil queryUtil);
 
+    /**
+     * 获取根据种类分类的评论
+     * @return 查询结果
+     */
     Map<Integer, List<Link>> getLinksForLinkPage();
 }
