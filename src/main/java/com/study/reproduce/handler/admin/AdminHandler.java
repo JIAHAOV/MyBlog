@@ -3,6 +3,7 @@ package com.study.reproduce.handler.admin;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.model.request.AdminLoginData;
 import com.study.reproduce.service.*;
+import com.study.reproduce.utils.PatternUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +71,9 @@ public class AdminHandler {
         Integer adminUserId = getAdminUserId(request);
         if (adminUserId == null) {
             return "请先登录";
+        }
+        if (!PatternUtil.isEmail(loginUserName) || !PatternUtil.isEmail(nickName)) {
+            return "参数格式不合法";
         }
         if (adminService.updateName(adminUserId, loginUserName, nickName)) {
             return "success";

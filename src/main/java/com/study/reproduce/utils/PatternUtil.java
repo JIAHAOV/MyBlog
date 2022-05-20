@@ -28,6 +28,16 @@ public class PatternUtil {
         return checkString(rule, websiteUrl);
     }
 
+    /**
+     * 校验输入的名称是否包含特殊字符
+     * @param name 名称
+     * @return 校验结果
+     */
+    public static boolean isLegal(String name) {
+        String rule = "^(?!_)(?!.*?_$)[a-zA-Z0-9_\\u4e00-\\u9fa5]+$";
+        return checkString(rule, name);
+    }
+
     private static boolean checkString(String rule, String checkStr) {
         Pattern pattern = Pattern.compile(rule);
         Matcher matcher = pattern.matcher(checkStr);

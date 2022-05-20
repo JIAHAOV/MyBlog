@@ -35,12 +35,12 @@ public class PageHandler {
         return "admin/login";
     }
 
-    @GetMapping(value = {"/login", "/"})
+    @GetMapping(value = {"/login"})
     public String loginPage() {
         return "admin/login";
     }
 
-    @GetMapping("/index")
+    @GetMapping(value = {"/index", "", "/"})
     public String index(Model model) {
         model.addAttribute("path", "/admin/index");
         model.addAttribute("blogCount", blogService.count());

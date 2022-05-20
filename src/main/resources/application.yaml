@@ -27,6 +27,7 @@ custom:
   my-blog:
     captcha:
       text-producer-font-color: black
+      text-producer-char-length: 4
       text-producer-char-space: 4
       text-producer-font-size: 30
       image-width: 150

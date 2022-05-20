@@ -9,6 +9,7 @@ import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.service.AdminService;
 import com.study.reproduce.mapper.AdminMapper;
 import com.study.reproduce.utils.MD5Util;
+import com.study.reproduce.utils.PatternUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +36,12 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
             session.setAttribute("errorMsg", "参数错误");
             return null;
         }
-        //TODO 验证是否有特殊字符
-        Object loginVerifyCode = session.getAttribute(VerifyCode.VERIFY_CODE_KEY);
-        if (loginVerifyCode == null || !loginVerifyCode.equals(verifyCode)) {
+        if (!PatternUtil.isLegal(account)) {
+            session.setAttribute("errorMsg", "用户名不合法");
+            return null;
+        }
+        String loginVerifyCode = (String) session.getAttribute(VerifyCode.VERIFY_CODE_KEY);
+        if (loginVerifyCode == null || !loginVerifyCode.equalsIgnoreCase(verifyCode)) {
             session.setAttribute("errorMsg", "验证码错误");
             return null;
         }

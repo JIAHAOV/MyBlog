@@ -32,6 +32,6 @@ public class PageResult<T> implements Serializable {
         this.pageSize = pageSize;
         this.currPage = currPage;
         this.list = list;
-        this.totalPage = totalCount % pageSize == 0 ? totalPage / pageSize : totalPage / pageSize + 1;
+        this.totalPage = Math.toIntExact(totalCount % pageSize == 0 ? totalCount / pageSize : totalCount / pageSize + 1);
     }
 }

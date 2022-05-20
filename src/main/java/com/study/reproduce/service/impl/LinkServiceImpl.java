@@ -33,11 +33,8 @@ public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link>
         page.addOrder(OrderItem.desc("link_id"));
         Page<Link> linkPage = linkMapper.selectPage(page, null);
         Long totalCount = linkMapper.selectCount(null);
-        PageResult<Link> pageResult = new PageResult<>();
-        pageResult.setList(linkPage.getRecords());
-        pageResult.setCurrPage(queryUtil.getPage());
-        pageResult.setPageSize(queryUtil.getLimit());
-        pageResult.setTotalCount(totalCount);
+        PageResult<Link> pageResult = new PageResult<>(totalCount, queryUtil.getLimit(),
+                queryUtil.getPage(), linkPage.getRecords());
         return pageResult;
     }
 

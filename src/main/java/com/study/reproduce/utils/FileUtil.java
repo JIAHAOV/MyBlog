@@ -25,7 +25,7 @@ public class FileUtil {
                 throw ExceptionGenerator.businessError("文件创建失败");
             }
         }
-        String fileName = UUID.randomUUID().toString() + "_" + originalFilename;
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "") + "_" + originalFilename;
         File file = new File(path, fileName);
         return file;
     }

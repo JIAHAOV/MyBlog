@@ -54,6 +54,7 @@ public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMappe
         if (newTags.size() > 0) {
             tagService.saveBatch(newTags);
         }
+        //TODO tag 使用了逻辑删除，当新增之前删除的标签的时候，复用之前删除的
         //添加关系数据
         ArrayList<BlogTagRelation> relations = new ArrayList<>();
         for (Tag tag : tags) {

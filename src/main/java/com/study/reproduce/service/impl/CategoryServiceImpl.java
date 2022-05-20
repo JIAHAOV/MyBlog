@@ -37,11 +37,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category>
         page.addOrder(OrderItem.desc("category_id"));
         Page<Category> categoryPage = categoryMapper.selectPage(page, null);
         Long totalCount = categoryMapper.selectCount(null);
-        PageResult<Category> pageResult = new PageResult<>();
-        pageResult.setTotalCount(totalCount);
-        pageResult.setPageSize(pageSize);
-        pageResult.setCurrPage(currentPage);
-        pageResult.setList(categoryPage.getRecords());
+        PageResult<Category> pageResult = new PageResult<>(totalCount, pageSize,
+                currentPage, categoryPage.getRecords());
         return pageResult;
     }
 

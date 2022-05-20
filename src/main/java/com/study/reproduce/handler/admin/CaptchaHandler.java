@@ -19,7 +19,7 @@ public class CaptchaHandler {
     private DefaultKaptcha defaultKaptcha;
 
     @GetMapping("/captcha")
-    public void captcha(HttpServletRequest request, HttpServletResponse response){
+    public void captcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String verifyCode = defaultKaptcha.createText();
         request.getSession().setAttribute("verifyCode", verifyCode);
         BufferedImage image = defaultKaptcha.createImage(verifyCode);
@@ -27,11 +27,6 @@ public class CaptchaHandler {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("image/jpeg");
-        try {
-            ImageIO.write(image, "jpg", response.getOutputStream());
-        } catch (IOException e) {
-            //TODO 异常处理
-            e.printStackTrace();
-        }
+        ImageIO.write(image, "jpg", response.getOutputStream());
     }
 }

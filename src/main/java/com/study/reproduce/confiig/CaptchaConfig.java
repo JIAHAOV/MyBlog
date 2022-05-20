@@ -16,6 +16,7 @@ public class CaptchaConfig {
     private String border = "no";
     private String textProducerFontColor = "black";
     private String textProducerCharSpace = "5";
+    private String textProducerCharLength = "";
     private String textProducerFontSize = "30";
     private String imageWidth = "150";
     private String imageHeight = "40";
@@ -29,13 +30,14 @@ public class CaptchaConfig {
     public DefaultKaptcha defaultKaptcha() {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         Properties properties = new Properties();
-        properties.put("kaptcha.border", border);
-        properties.put("kaptcha.textproducer.font.color", textProducerFontColor);
-        properties.put("kaptcha.textproducer.char.space", textProducerCharSpace);
-        properties.put("kaptcha.textproducer.font.size", textProducerFontSize);
-        properties.put("kaptcha.image.width", imageWidth);
-        properties.put("kaptcha.image.height", imageHeight);
-        properties.put("kaptcha.session.key", sessionKey);
+        properties.setProperty("kaptcha.border", border);
+        properties.setProperty("kaptcha.textproducer.font.color", textProducerFontColor);
+        properties.setProperty("kaptcha.textproducer.char.space", textProducerCharSpace);
+        properties.setProperty("kaptcha.textproducer.font.size", textProducerFontSize);
+        properties.setProperty("kaptcha.image.width", imageWidth);
+        properties.setProperty("kaptcha.image.height", imageHeight);
+        properties.setProperty("kaptcha.session.key", sessionKey);
+        properties.setProperty("kaptcha.textproducer.char.length", textProducerCharLength);
         Config config = new Config(properties);
         defaultKaptcha.setConfig(config);
         return defaultKaptcha;

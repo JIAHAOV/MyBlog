@@ -36,11 +36,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         page.addOrder(OrderItem.desc("comment_id"));
         Page<Comment> commentPage = commentMapper.selectPage(page, null);
         Long totalCount = commentMapper.selectCount(null);
-        PageResult<Comment> pageResult = new PageResult<>();
-        pageResult.setCurrPage(currentPage);
-        pageResult.setPageSize(pageSize);
-        pageResult.setTotalCount(totalCount);
-        pageResult.setList(commentPage.getRecords());
+        PageResult<Comment> pageResult = new PageResult<>(totalCount, pageSize,
+                currentPage, commentPage.getRecords());
         return pageResult;
     }
 
@@ -82,11 +79,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
                 .eq("comment_status", 1);
         Long totalCount = commentMapper.selectCount(wrapper);
         Page<Comment> selectPage = commentMapper.selectPage(commentPage, wrapper);
-        PageResult<Comment> pageResult = new PageResult<>();
-        pageResult.setList(selectPage.getRecords());
-        pageResult.setCurrPage(page);
-        pageResult.setPageSize(8);
-        pageResult.setTotalCount(totalCount);
+        PageResult<Comment> pageResult = new PageResult<>(totalCount, 8,
+                page, selectPage.getRecords());
         return pageResult;
     }
 }

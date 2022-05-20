@@ -199,11 +199,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         Page<Blog> blogPage = new Page<>(page, 9);
         Page<Blog> selectPage = blogMapper.selectPage(blogPage, wrapper);
         Long totalCount = blogMapper.selectCount(wrapper);
-        PageResult<Blog> pageResult = new PageResult<>();
-        pageResult.setList(selectPage.getRecords());
-        pageResult.setPageSize(9);
-        pageResult.setCurrPage(page);
-        pageResult.setTotalCount(totalCount);
+        PageResult<Blog> pageResult = new PageResult<>(totalCount, 9,
+                page, selectPage.getRecords());
         return pageResult;
     }
 

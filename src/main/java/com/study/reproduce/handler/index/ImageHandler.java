@@ -18,18 +18,13 @@ import java.io.IOException;
 public class ImageHandler {
 
     @GetMapping("/blogs/{fileName}")
-    public void getBlogCover(@PathVariable String fileName, HttpServletResponse response) {
+    public void getBlogCover(@PathVariable String fileName, HttpServletResponse response) throws IOException {
         File file = FileUtil.getLoadFile(BlogHandler.class, fileName);
         response.setHeader("Cache-Control", "no-store");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("image/jpeg");
-        try {
-            BufferedImage image = ImageIO.read(file);
-            ImageIO.write(image, "jpg", response.getOutputStream());
-        } catch (IOException e) {
-            //TODO 异常处理
-            e.printStackTrace();
-        }
+        BufferedImage image = ImageIO.read(file);
+        ImageIO.write(image, "jpg", response.getOutputStream());
     }
 }
