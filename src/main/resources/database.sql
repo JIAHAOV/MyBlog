@@ -105,6 +105,21 @@ create table tb_config
 alter table tb_config
     add primary key (config_id);
 
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (1, 'footerAbout', 'your personal blog. have fun.', '2018-11-11 20:33:23', '2018-11-12 11:58:06');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (2, 'footerCopyRight', '2022', '2018-11-11 20:33:31', '2018-11-12 11:58:06');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (3, 'footerICP', '浙ICP备17008806号-3', '2018-11-11 20:33:27', '2018-11-12 11:58:06');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (4, 'footerPoweredBy', 'https://github.com/ZHENFENG13', '2018-11-11 20:33:36', '2018-11-12 11:58:06');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (5, 'footerPoweredByURL', 'https://github.com/ZHENFENG13', '2018-11-11 20:33:39', '2018-11-12 11:58:06');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (6, 'websiteDescription', 'personal blog是SpringBoot2+Thymeleaf+Mybatis建造的个人博客网站.SpringBoot实战博客源码.个人博客搭建', '2018-11-11 20:33:04', '2022-05-08 10:44:22');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (7, 'websiteIcon', '/admin/dist/img/favicon.png', '2018-11-11 20:33:11', '2022-05-08 10:44:22');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (8, 'websiteLogo', '/admin/dist/img/logo2.png', '2018-11-11 20:33:08', '2022-05-08 10:44:22');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (9, 'websiteName', '测试', '2018-11-11 20:33:01', '2022-05-08 10:44:22');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (10, 'yourAvatar', '/admin/dist/img/13.png', '2018-11-11 20:33:14', '2019-05-07 21:56:23');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (11, 'yourEmail', '2449207463@qq.com', '2018-11-11 20:33:17', '2019-05-07 21:56:23');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (12, 'yourName', 'zero', '2018-11-11 20:33:20', '2019-05-07 21:56:23');
+INSERT INTO `my_blog_db`.`tb_config` (`config_id`, `config_name`, `config_value`, `create_time`, `update_time`) VALUES (13, 'websiteStyle', '2', '2022-05-19 14:55:16', '2022-05-19 14:55:16');
+
+
 -- auto-generated definition
 create table tb_link
 (
