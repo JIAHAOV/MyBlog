@@ -6,6 +6,8 @@ import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 @Slf4j
+
 @RestController
 @RequestMapping("/admin")
 public class BlogHandler {
@@ -35,6 +38,7 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/save")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result save(Blog blog) {
         checkBlogInfo(blog);
         if (blogService.saveBlog(blog)) {
@@ -45,6 +49,7 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/update")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result update(Blog blog) {
         checkBlogInfo(blog);
         if (blogService.updateBlog(blog)) {
@@ -55,6 +60,7 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/delete")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result delete(@RequestBody List<Integer> ids) {
         if (ids == null || ids.size() <= 0) {
             throw ExceptionGenerator.businessError("参数异常");

@@ -3,6 +3,9 @@ package com.study.reproduce.handler.admin;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.service.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,8 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/admin")
 public class PageHandler {
     @Resource
+    AdminService adminService;
+    @Resource
     BlogService blogService;
     @Resource
     CategoryService categoryService;
@@ -28,12 +33,12 @@ public class PageHandler {
     @Resource
     WebSiteConfigService webSiteConfigService;
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.removeAttribute(AdminService.GET_ADMIN_KEY);
-        session.removeAttribute("errorMsg");
-        return "admin/login";
-    }
+//    @GetMapping("/logout")
+//    public String logout(HttpSession session) {
+//        session.removeAttribute(AdminService.GET_ADMIN_KEY);
+//        session.removeAttribute("errorMsg");
+//        return "admin/login";
+//    }
 
     @GetMapping(value = {"/login"})
     public String loginPage() {
@@ -72,7 +77,8 @@ public class PageHandler {
 
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
-        Object admin = session.getAttribute(AdminService.GET_ADMIN_KEY);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Admin admin = adminService.getAdminByUsername(user.getUsername());
         if (admin != null) {
             Admin adminInfo = (Admin) admin;
             model.addAttribute("loginUserName", adminInfo.getLoginUserName());

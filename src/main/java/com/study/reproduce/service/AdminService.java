@@ -49,4 +49,6 @@ public interface AdminService extends IService<Admin> {
      * @return 是否成功
      */
     boolean updateName(Integer adminUserId, String loginUserName, String nickName);
+
+    Admin getAdminByUsername(String username);
 }

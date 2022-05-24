@@ -99,6 +99,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
                 .eq("admin_user_id", adminUserId);
         return this.update(updateWrapper);
     }
+
+    @Override
+    public Admin getAdminByUsername(String username) {
+        QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("login_user_name", username);
+        Admin admin = this.getOne(queryWrapper);
+        return admin;
+    }
 }
 
 

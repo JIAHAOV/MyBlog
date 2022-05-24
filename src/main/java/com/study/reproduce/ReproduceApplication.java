@@ -4,14 +4,14 @@ import com.study.reproduce.confiig.WebSiteStyleConfig;
 import com.study.reproduce.constant.WebSiteConfigId;
 import com.study.reproduce.mapper.WebSiteConfigMapper;
 import com.study.reproduce.model.domain.WebSiteConfig;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import javax.annotation.Resource;
-
 @EnableAsync
+@MapperScan("com.study.reproduce.mapper")
 @SpringBootApplication
 public class ReproduceApplication {
 

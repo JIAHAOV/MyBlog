@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.reproduce.mapper.AdminRoleRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.study.reproduce.model.domain.AdminRoleRelation">
+            <id property="relationId" column="relation_id" jdbcType="INTEGER"/>
+            <result property="adminUserId" column="admin_user_id" jdbcType="INTEGER"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        relation_id,admin_user_id,role_id
+    </sql>
+</mapper>

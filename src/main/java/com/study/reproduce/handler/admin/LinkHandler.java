@@ -8,6 +8,8 @@ import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +33,7 @@ public class LinkHandler {
     }
 
     @PostMapping("/links/save")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result save(Link link) {
         log.info("/links/save\t" + "param: " + link);
         Result result = checkLinkInfo(link);
@@ -45,6 +48,7 @@ public class LinkHandler {
     }
 
     @PostMapping("/links/update")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result update(Link link) {
         Result result = checkLinkInfo(link);
         if (result != null) {
@@ -72,6 +76,7 @@ public class LinkHandler {
     }
 
     @PostMapping("/links/delete")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result delete(@RequestBody Integer[] ids) {
         if (ids.length == 0) {
             return ResultGenerator.getFailResult("参数错误");

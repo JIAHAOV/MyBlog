@@ -1,10 +1,13 @@
 package com.study.reproduce.handler.admin;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.model.request.AdminLoginData;
 import com.study.reproduce.service.*;
 import com.study.reproduce.utils.PatternUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -19,7 +22,7 @@ public class AdminHandler {
     @Resource
     AdminService adminService;
 
-    @PostMapping("/login")
+//    @PostMapping("/login")
     public void login(AdminLoginData loginData, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String account = loginData.getAccount();
         String password = loginData.getPassword();
@@ -88,11 +91,12 @@ public class AdminHandler {
      * @return id
      */
     public Integer getAdminUserId(HttpServletRequest request) {
-        Object attribute = request.getSession().getAttribute(AdminService.GET_ADMIN_KEY);
-        if (attribute == null) {
+        String username = (String) request.getSession().getAttribute(AdminService.GET_ADMIN_KEY);
+        if (username == null) {
             return null;
         }
-        Admin admin = (Admin)attribute;
-        return admin.getAdminUserId();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Admin admin = adminService.getAdminByUsername(user.getUsername());
+        return admin != null ? admin.getAdminUserId() : null;
     }
 }

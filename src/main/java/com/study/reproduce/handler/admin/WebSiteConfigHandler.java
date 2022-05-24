@@ -9,6 +9,8 @@ import com.study.reproduce.model.request.WebsiteInfoParam;
 import com.study.reproduce.service.WebSiteConfigService;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,6 +24,7 @@ public class WebSiteConfigHandler {
     WebSiteConfigService webSiteConfigService;
 
     @PostMapping("/configurations/website")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result website(WebsiteInfoParam websiteInfoParam) {
         ArrayList<WebSiteConfig> webSiteConfigs = new ArrayList<>();
         if (!websiteInfoParam.getWebsiteDescription().isEmpty()) {
@@ -64,6 +67,7 @@ public class WebSiteConfigHandler {
     }
 
     @PostMapping("/configurations/userInfo")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result userInfo(UserInfoParam userInfoParam) {
         ArrayList<WebSiteConfig> webSiteConfigs = new ArrayList<>();
         if (!userInfoParam.getYourEmail().isEmpty()) {
@@ -93,6 +97,7 @@ public class WebSiteConfigHandler {
     }
 
     @PostMapping("/configurations/footer")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result footer(FooterInfoParam footerInfoParam) {
         ArrayList<WebSiteConfig> webSiteConfigs = new ArrayList<>();
         if (!footerInfoParam.getFooterAbout().isEmpty()) {

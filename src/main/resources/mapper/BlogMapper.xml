@@ -37,11 +37,11 @@
         WHERE
             blog_status = 1
             AND is_deleted = 0
-        <if test="type!=null and type=0">
+        <if test="type!=null and type==0">
             ORDER BY
             blog_views desc
         </if>
-        <if test="type!=null and type=1">
+        <if test="type!=null and type==1">
             ORDER BY
             blog_id desc
         </if>

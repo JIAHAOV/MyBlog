@@ -127,9 +127,13 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Override
     public PageResult<BlogForDisplay> getBlogsForIndexPage(Integer page) {
         Page<Blog> blogPage = new Page<>(page, SIZE);
-        blogPage.addOrder(OrderItem.desc("blog_id"));
+//        blogPage.addOrder(OrderItem.desc("blog_id"));
+        QueryWrapper<Blog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("blog_status", 1)
+                .orderByDesc("blog_id");
         //查询出一页文章信息
-        List<Blog> blogList = blogMapper.selectPage(blogPage, null).getRecords();
+        List<Blog> blogList = blogMapper.selectPage(blogPage, queryWrapper).getRecords();
+        blogList = blogList.stream().filter(blog -> blog.getBlogStatus() != 0).collect(Collectors.toList());
         //用来在主页展示的文章对象的集合
         ArrayList<BlogForDisplay> displays = new ArrayList<>();
         List<Category> categories = categoryMapper.selectList(null);
@@ -151,12 +155,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             }
             displays.add(blogForDisplay);
         }
-        Long totalCount = blogMapper.selectCount(null);
-        PageResult<BlogForDisplay> pageResult = new PageResult<>();
-        pageResult.setCurrPage(page);
-        pageResult.setPageSize(SIZE);
-        pageResult.setTotalCount(totalCount);
-        pageResult.setList(displays);
+        Long totalCount = blogMapper.selectCount(queryWrapper);
+        PageResult<BlogForDisplay> pageResult = new PageResult<>(totalCount, SIZE, page, displays);
         return pageResult;
     }
 

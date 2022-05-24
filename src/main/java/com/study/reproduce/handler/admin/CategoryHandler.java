@@ -8,6 +8,9 @@ import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,6 +25,7 @@ public class CategoryHandler {
     CategoryService categoryService;
 
     @GetMapping("/categories/list")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result list(PageParam pageParam) {
         if (pageParam == null && pageParam.getLimit() == null) {
             throw ExceptionGenerator.businessError("参数错误");
@@ -34,6 +38,7 @@ public class CategoryHandler {
      * 分类添加
      */
     @PostMapping("/categories/save")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result save(Category category) {
         checkCategoryInfo(category);
         boolean result = categoryService.saveCategory(category);
@@ -50,6 +55,7 @@ public class CategoryHandler {
      * 分类修改
      */
     @PostMapping("/categories/update")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result update(Category category) {
         checkCategoryInfo(category);
         boolean result = categoryService.updateById(category);
@@ -66,6 +72,7 @@ public class CategoryHandler {
      * 分类删除
      */
     @PostMapping("/categories/delete")
+    @PreAuthorize("hasAnyRole('admin')")
     public Result delete(@RequestBody List<Integer> ids) {
         if (ids == null || ids.size() == 0) {
             return ResultGenerator.getFailResult("参数错误");

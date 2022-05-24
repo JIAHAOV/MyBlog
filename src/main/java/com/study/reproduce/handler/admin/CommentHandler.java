@@ -8,6 +8,8 @@ import com.study.reproduce.utils.PageResult;
 import com.study.reproduce.utils.Result;
 import com.study.reproduce.utils.ResultGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +33,7 @@ public class CommentHandler {
     }
 
     @PostMapping("/comments/checkDone")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result checkDone(@RequestBody List<Integer> ids) {
         if (ids == null || ids.size() == 0) {
             return ResultGenerator.getFailResult("参数错误");
@@ -43,6 +46,7 @@ public class CommentHandler {
     }
 
     @PostMapping("/comments/reply")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result checkDone(ReplayParam replayParam) {
         if (replayParam.getCommentId() == null || replayParam.getReplyBody() == null) {
             return ResultGenerator.getFailResult("参数错误");
@@ -55,6 +59,7 @@ public class CommentHandler {
     }
 
     @PostMapping("/comments/delete")
+    @PreAuthorize("hasAnyRole('admin', 'user')")
     public Result delete(@RequestBody List<Integer> ids) {
         if (ids == null || ids.size() == 0) {
             return ResultGenerator.getFailResult("删除失败");
