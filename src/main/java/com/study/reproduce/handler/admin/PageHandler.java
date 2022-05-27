@@ -1,6 +1,7 @@
 package com.study.reproduce.handler.admin;
 
 import com.study.reproduce.model.domain.Admin;
+import com.study.reproduce.model.domain.AdminDetails;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -77,12 +78,11 @@ public class PageHandler {
 
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Admin admin = adminService.getAdminByUsername(user.getUsername());
+        AdminDetails adminDetails = (AdminDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Admin admin = adminService.getById(adminDetails.getAdminUserId());
         if (admin != null) {
-            Admin adminInfo = (Admin) admin;
-            model.addAttribute("loginUserName", adminInfo.getLoginUserName());
-            model.addAttribute("nickName", adminInfo.getNickName());
+            model.addAttribute("loginUserName", admin.getLoginUserName());
+            model.addAttribute("nickName", admin.getNickName());
         }
         model.addAttribute("path", "admin/links");
         return "admin/profile";

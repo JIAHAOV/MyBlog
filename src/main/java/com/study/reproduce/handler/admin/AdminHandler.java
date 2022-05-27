@@ -2,6 +2,7 @@ package com.study.reproduce.handler.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.study.reproduce.model.domain.Admin;
+import com.study.reproduce.model.domain.AdminDetails;
 import com.study.reproduce.model.request.AdminLoginData;
 import com.study.reproduce.service.*;
 import com.study.reproduce.utils.PatternUtil;
@@ -75,7 +76,7 @@ public class AdminHandler {
         if (adminUserId == null) {
             return "请先登录";
         }
-        if (!PatternUtil.isEmail(loginUserName) || !PatternUtil.isEmail(nickName)) {
+        if (!PatternUtil.isLegal(loginUserName) || !PatternUtil.isLegal(nickName)) {
             return "参数格式不合法";
         }
         if (adminService.updateName(adminUserId, loginUserName, nickName)) {
@@ -95,8 +96,8 @@ public class AdminHandler {
         if (username == null) {
             return null;
         }
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Admin admin = adminService.getAdminByUsername(user.getUsername());
+        AdminDetails adminDetails = (AdminDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Admin admin = adminService.getAdminByUsername(adminDetails.getUsername());
         return admin != null ? admin.getAdminUserId() : null;
     }
 }

@@ -16,7 +16,7 @@ public class CaptchaConfig {
     private String border = "no";
     private String textProducerFontColor = "black";
     private String textProducerCharSpace = "5";
-    private String textProducerCharLength = "";
+    private String textProducerCharLength = "4";
     private String textProducerFontSize = "30";
     private String imageWidth = "150";
     private String imageHeight = "40";

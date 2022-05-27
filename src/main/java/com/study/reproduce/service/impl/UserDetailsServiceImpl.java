@@ -3,6 +3,7 @@ package com.study.reproduce.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Admin;
+import com.study.reproduce.model.domain.AdminDetails;
 import com.study.reproduce.model.domain.AdminRoleRelation;
 import com.study.reproduce.model.domain.Role;
 import com.study.reproduce.service.AdminRoleRelationService;
@@ -61,7 +62,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName());
             authorities.add(authority);
         }
-        User user = new User(username, admin.getLoginPassword(), authorities);
-        return user;
+        AdminDetails adminDetails = new AdminDetails(admin.getAdminUserId(), username, admin.getLoginPassword(), authorities);
+        return adminDetails;
     }
 }

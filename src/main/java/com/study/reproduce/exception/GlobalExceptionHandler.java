@@ -31,38 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PageNotFoundException.class)
     public String pageNotFoundException(RuntimeException e) {
-        e.printStackTrace();
+        log.warn(e.getStackTrace()[0].toString() + " : PageNotFoundException");
         return "error/404";
     }
-
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public Result customException(AccessDeniedException e, HttpSession session) {
-//        Result failResult = ResultGenerator.getFailResult("删除失败", 500);
-//        session.setAttribute("errorMsg", e.getMessage());
-//        return failResult;
-//    }
-
-//    @ExceptionHandler(RuntimeException.class)
-//    public String runtimeException(RuntimeException e, HttpServletResponse response, HttpServletRequest request) throws IOException {
-//        request.getSession().setAttribute("errorMsg", e.getMessage());
-//        HttpStatus status = getStatus(request);
-//        e.printStackTrace();
-//        if (status == HttpStatus.BAD_REQUEST) {
-//            return "/error/400";
-//        } else if (status == HttpStatus.NOT_FOUND) {
-//            return "/error/404";
-//        } else {
-//            return "/error/5xx";
-//        }
-//    }
-//
-//    public HttpStatus getStatus(HttpServletRequest request) {
-//        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-//        if (statusCode == null) {
-//            return HttpStatus.INTERNAL_SERVER_ERROR;
-//        } else {
-//            return HttpStatus.valueOf(statusCode);
-//        }
-//    }
-
 }
