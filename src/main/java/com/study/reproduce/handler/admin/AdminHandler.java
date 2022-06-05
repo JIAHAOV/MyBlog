@@ -1,6 +1,5 @@
 package com.study.reproduce.handler.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.model.domain.AdminDetails;
 import com.study.reproduce.model.request.AdminLoginData;
@@ -8,7 +7,6 @@ import com.study.reproduce.service.*;
 import com.study.reproduce.utils.PatternUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

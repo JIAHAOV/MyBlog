@@ -114,7 +114,7 @@ public class BlogHandler {
         if (blog.getBlogContent().isEmpty()) {
             throw ExceptionGenerator.businessError("请输入文章内容");
         }
-        if (blog.getBlogContent().length() > 50000) {
+        if (blog.getBlogContent().trim().length() > 50000) {
             throw ExceptionGenerator.businessError("文章内容过长");
         }
         if (blog.getBlogCoverImage().isEmpty()) {
