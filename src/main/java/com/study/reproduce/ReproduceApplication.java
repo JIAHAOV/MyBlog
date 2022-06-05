@@ -7,10 +7,12 @@ import com.study.reproduce.model.domain.WebSiteConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
+@EnableConfigurationProperties
 @MapperScan("com.study.reproduce.mapper")
 @SpringBootApplication
 public class ReproduceApplication {

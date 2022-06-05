@@ -33,3 +33,8 @@ custom:
       image-height: 40
       session-key: verifyCode
       border: 'no'
+    blog:
+      max-content-length: 100000
+      max-title-length: 150
+      max-url-length: 150
+      max-tags-length: 150

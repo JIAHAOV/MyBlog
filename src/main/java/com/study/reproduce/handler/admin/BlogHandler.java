@@ -1,11 +1,14 @@
 package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.constant.BlogConstant;
 import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.utils.*;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +23,10 @@ import java.net.URI;
 import java.util.List;
 
 @Slf4j
-
 @RestController
 @RequestMapping("/admin")
 public class BlogHandler {
+
     @Resource
     BlogService blogService;
 
@@ -99,22 +102,22 @@ public class BlogHandler {
         if (blog.getBlogTitle().isEmpty()) {
             throw ExceptionGenerator.businessError("标题不能为空");
         }
-        if (blog.getBlogTitle().length() > 150) {
+        if (blog.getBlogTitle().length() > BlogConstant.maxTitleLength) {
             throw ExceptionGenerator.businessError("标题过长");
         }
         if (blog.getBlogTags().isEmpty()) {
             throw ExceptionGenerator.businessError("标签不能为空");
         }
-        if (blog.getBlogTags().length() > 150) {
+        if (blog.getBlogTags().length() > BlogConstant.maxTagsLength) {
             throw ExceptionGenerator.businessError("标签过长");
         }
-        if (blog.getBlogSubUrl().length() > 150) {
+        if (blog.getBlogSubUrl().length() > BlogConstant.maxUrlLength) {
             throw ExceptionGenerator.businessError("url路径过长");
         }
         if (blog.getBlogContent().isEmpty()) {
             throw ExceptionGenerator.businessError("请输入文章内容");
         }
-        if (blog.getBlogContent().trim().length() > 50000) {
+        if (blog.getBlogContent().trim().length() > BlogConstant.maxContentLength) {
             throw ExceptionGenerator.businessError("文章内容过长");
         }
         if (blog.getBlogCoverImage().isEmpty()) {
