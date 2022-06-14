@@ -106,6 +106,13 @@ public class BlogIndexHandler {
         return tag(model, tagName, 1);
     }
 
+    /**
+     * 根据标签查看文章
+     * @param model
+     * @param tagName
+     * @param page
+     * @return
+     */
     @GetMapping({"/tag/{tagName}/{page}"})
     public String tag(Model model, @PathVariable("tagName") String tagName, @PathVariable("page") Integer page) {
         PageResult<Blog> blogPageResult = blogService.getBlogsPageByTypeName(tagName, page, 0);
@@ -138,6 +145,13 @@ public class BlogIndexHandler {
         return "blog/" + WebSiteStyleConfig.style + "/list";
     }
 
+    /**
+     * 提交评论
+     * @param request
+     * @param verifyCode
+     * @param comment
+     * @return
+     */
     @PostMapping(value = "/blog/comment")
     @ResponseBody
     public Result comment(HttpServletRequest request, String verifyCode, Comment comment) {
@@ -210,6 +224,10 @@ public class BlogIndexHandler {
         }
     }
 
+    /**
+     * 设置页面数据
+     * @param model
+     */
     public void setIndexMessage(Model model) {
         model.addAttribute("newBlogs", blogService.getSimpleBlogInfoIndex(1));
         model.addAttribute("hotBlogs", blogService.getSimpleBlogInfoIndex(0));
