@@ -62,10 +62,29 @@
         </dependency>
 
         <!-- md 转 html -->
+        <!--引入Markdown转HTML的插件-->
         <dependency>
-            <groupId>com.atlassian.commonmark</groupId>
+            <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.16.1</version>
+            <version>0.19.0</version>
+        </dependency>
+        <!--扩展 表格-->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-gfm-tables</artifactId>
+            <version>0.19.0</version>
+        </dependency>
+        <!-- 标题 -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-heading-anchor</artifactId>
+            <version>0.19.0</version>
+        </dependency>
+        <!-- 删除线 -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
+            <version>0.19.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->

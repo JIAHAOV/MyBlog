@@ -37,8 +37,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()//首先需要配置哪些请求会被拦截，哪些请求必须具有什么角色才能访问
-                .antMatchers("/static/**", "/common/captcha", "/admin/login", "/admin/logout",
-                        "/admin/dist/**", "/admin/plugins/**")
+                .antMatchers("/common/captcha", "/admin/login", "/admin/logout",
+                        "/admin/dist/**", "/admin/plugins/**", "/image/blogs/*", "/blog/**")
                 .permitAll()//静态资源，使用permitAll来运行任何人访问（注意一定要放在前面）
                 .antMatchers("/admin/**")
                 .hasAnyRole("admin", "user", "visitor")
@@ -60,6 +60,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
                 .csrf().disable();
+        http
+                .headers()
+                .frameOptions()
+                .sameOrigin();
     }
 
     @Override
@@ -67,6 +71,5 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
     }
-
 
 }

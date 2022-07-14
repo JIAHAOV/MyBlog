@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.List;
 
@@ -77,11 +78,13 @@ public class BlogHandler {
     }
 
     @PostMapping("/blogs/md/uploadfile")
+//    @PreAuthorize("hasAnyRole('admin', 'user')")
     public void uploadFileByEditorMd(@RequestParam(name = "editormd-image-file") MultipartFile multipartFile,
                                      HttpServletRequest request,
                                      HttpServletResponse response) throws IOException {
         File file = FileUtil.getUploadFile(BlogHandler.class, multipartFile);
         System.out.println(file.getAbsolutePath());
+        PrintWriter writer = response.getWriter();
         try {
             //上传文件
             multipartFile.transferTo(file);
@@ -90,10 +93,14 @@ public class BlogHandler {
             String url = request.getRequestURL().toString();
             //回复
             URI uri = URIUtil.getResponseURI(new URI(url), file.getName());
-            response.getWriter().write("{\"success\": 1, \"message\":\"success\",\"url\":\"" + uri + "\"}");
+            writer.write("{\"success\": 1, \"message\":\"success\",\"url\":\"" + uri + "\"}");
+            writer.flush();
+            writer.close();
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().write("{\"success\":0}");
+            writer.write("{\"success\":0}");
+            writer.flush();
+            writer.close();
             throw new RuntimeException("上传错误");
         }
     }

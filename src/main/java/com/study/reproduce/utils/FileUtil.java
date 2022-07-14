@@ -17,7 +17,6 @@ public class FileUtil {
      */
     public static File getUploadFile(Class location, MultipartFile multipartFile) {
         String originalPath = getOriginalPath(location);
-        String originalFilename = multipartFile.getOriginalFilename();
         File path = new File(originalPath + File.separator + FileConstant.FILE_UPLOAD_DIC);
         if (!path.exists()) {
             boolean mkdirs = path.mkdirs();
@@ -25,7 +24,7 @@ public class FileUtil {
                 throw ExceptionGenerator.businessError("文件创建失败");
             }
         }
-        String fileName = UUID.randomUUID().toString().replaceAll("-", "") + "_" + originalFilename;
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
         File file = new File(path, fileName);
         return file;
     }

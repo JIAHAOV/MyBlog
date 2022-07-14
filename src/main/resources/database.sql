@@ -15,6 +15,28 @@ create table tb_admin_user
     charset = utf8;
 
 -- auto-generated definition
+create table tb_admin_role_relation
+(
+    relation_id   int auto_increment comment '主键ID'
+        primary key,
+    admin_user_id int not null comment '管理员id',
+    role_id       int not null comment '权限id'
+)
+    comment '管理员和权限的关系表';
+
+-- auto-generated definition
+create table tb_admin_role
+(
+    role_id     int auto_increment comment '主键id'
+        primary key,
+    role_name   varchar(32) default 'user'              not null comment '身份名称',
+    create_time datetime    default (CURRENT_TIMESTAMP) not null comment '创建时间',
+    update_time datetime    default (CURRENT_TIMESTAMP) not null comment '修改时间',
+    is_deleted  tinyint     default 0                   not null comment '是否删除'
+)
+    comment '权限表';
+
+-- auto-generated definition
 create table tb_blog
 (
     blog_id            bigint auto_increment comment '博客表主键id'

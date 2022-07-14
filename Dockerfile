@@ -3,7 +3,7 @@ FROM maven:jdk8 as builder
 # Copy local code to the container image.
 WORKDIR /app
 COPY pom.xml .
-COPY src ./src
+# COPY src ./src
 COPY src/main/resources/application-prod.yaml /app
 
 # Build a release artifact.

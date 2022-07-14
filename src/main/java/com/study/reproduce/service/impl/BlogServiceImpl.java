@@ -178,7 +178,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             blogDetail.setBlogCategoryIcon(category.getCategoryIcon());
         }
         //将 md 转换成 html
-        String htmlContent = MakeDownUtil.convert(blog.getBlogContent());
+        String htmlContent = MakeDownUtil.markdownToHtmlExtensions(blog.getBlogContent());
         blogDetail.setBlogContent(htmlContent);
         //设置评论数
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();

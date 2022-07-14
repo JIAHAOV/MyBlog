@@ -1,6 +1,5 @@
 package com.study.reproduce.filter;
 
-import com.study.reproduce.model.domain.Admin;
 import com.study.reproduce.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +13,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -59,21 +59,8 @@ public class SecurityLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         request.getSession().setAttribute("errorMsg", failed.getMessage());
         response.sendRedirect(request.getContextPath() + "/admin/login");
-    }
-
-    public Admin handleAdminMessage(Admin admin) {
-        if (admin == null) {
-            return null;
-        }
-        Admin safelyAdmin = new Admin();
-        safelyAdmin.setAdminUserId(admin.getAdminUserId());
-        safelyAdmin.setLoginUserName(admin.getLoginUserName());
-        safelyAdmin.setLoginPassword(null);
-        safelyAdmin.setNickName(admin.getNickName());
-        safelyAdmin.setLocked(null);
-        return safelyAdmin;
     }
 }
