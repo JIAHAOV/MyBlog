@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
-    public Result customException(BusinessException e, HttpSession session) {
-        Result failResult = ResultGenerator.getFailResult(e.getMessage(), e.getErrorCode());
+    public Result<?> customException(BusinessException e, HttpSession session) {
+        Result<?> failResult = ResultGenerator.getFailResult(e.getMessage(), e.getErrorCode());
         session.setAttribute("errorMsg", e.getMessage());
         return failResult;
     }

@@ -30,5 +30,6 @@
             relation.tag_id
         ORDER BY
             tag_count DESC
+        LIMIT 10
     </select>
 </mapper>

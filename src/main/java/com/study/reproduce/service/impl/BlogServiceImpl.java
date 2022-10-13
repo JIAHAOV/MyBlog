@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.exception.ExceptionGenerator;
@@ -21,6 +20,7 @@ import com.study.reproduce.utils.MakeDownUtil;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +45,10 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Resource
     CategoryMapper categoryMapper;
     @Resource
+    StringRedisTemplate stringRedisTemplate;
+    @Resource
     BlogTagRelationService blogTagRelationService;
+
 
     @Override
     public PageResult<Blog> queryByPageUtil(PageQueryUtil queryUtil) {
@@ -120,8 +123,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
 
     @Override
     public List<SimpleBlogInfo> getSimpleBlogInfoIndex(Integer type) {
-        List<SimpleBlogInfo> simpleBlogInfo = blogMapper.getSimpleBlogInfo(type, 9);
-        return simpleBlogInfo;
+        return blogMapper.getSimpleBlogInfo(type, 9);
     }
 
     @Override

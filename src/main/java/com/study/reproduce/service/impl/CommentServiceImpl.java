@@ -1,7 +1,8 @@
 package com.study.reproduce.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,7 +10,9 @@ import com.study.reproduce.model.domain.Comment;
 import com.study.reproduce.mapper.CommentMapper;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.CommentService;
+import com.study.reproduce.service.SendMailService;
 import com.study.reproduce.utils.PageResult;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,6 +31,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     @Resource
     CommentMapper commentMapper;
 
+    @Resource
+    private SendMailService sendMailService;
+
+    private final String REPLY_TEMPLATE = "亲爱的{}:\n" +
+            "<br>\n" +
+            "你在 <a href=\"http://custom-cloud.xyz/blog/{}\">链接</a> 的评论，已被回复: \"{}\"";
+    private final String REPLY_TITLE = "网站回复";
+
     @Override
     public PageResult<Comment> queryByPage(PageParam pageParam) {
         int currentPage = pageParam.getPage();
@@ -36,9 +47,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         page.addOrder(OrderItem.desc("comment_id"));
         Page<Comment> commentPage = commentMapper.selectPage(page, null);
         Long totalCount = commentMapper.selectCount(null);
-        PageResult<Comment> pageResult = new PageResult<>(totalCount, pageSize,
+        return new PageResult<>(totalCount, pageSize,
                 currentPage, commentPage.getRecords());
-        return pageResult;
     }
 
     @Override
@@ -62,12 +72,17 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         if (comment.getCommentStatus().equals(0)) {
             return false;
         }
+
         comment.setReplyBody(replayMessage);
-        UpdateWrapper<Comment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("reply_body", replayMessage)
-                .set("reply_create_time", LocalDateTime.now())
-                .eq("comment_id", commentId);
+        LambdaUpdateWrapper<Comment> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Comment::getReplyBody, replayMessage)
+                .set(Comment::getReplyCreateTime, LocalDateTime.now())
+                .eq(Comment::getCommentId, commentId);
+
         int update = commentMapper.update(comment, updateWrapper);
+
+        sendMail(comment, replayMessage);
+
         return update > 0;
     }
 
@@ -79,9 +94,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
                 .eq("comment_status", 1);
         Long totalCount = commentMapper.selectCount(wrapper);
         Page<Comment> selectPage = commentMapper.selectPage(commentPage, wrapper);
-        PageResult<Comment> pageResult = new PageResult<>(totalCount, 8,
+        return new PageResult<>(totalCount, 8,
                 page, selectPage.getRecords());
-        return pageResult;
+    }
+
+    @Async
+    public void sendMail(Comment comment, String replayMessage) {
+        String mailMessage = StrUtil.format(REPLY_TEMPLATE, comment.getCommentator(), comment.getBlogId(), replayMessage);
+        sendMailService.sendHtmlMessage(comment.getEmail(), REPLY_TITLE, mailMessage);
     }
 }
 
