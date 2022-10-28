@@ -33,16 +33,14 @@ public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link>
         page.addOrder(OrderItem.desc("link_id"));
         Page<Link> linkPage = linkMapper.selectPage(page, null);
         Long totalCount = linkMapper.selectCount(null);
-        PageResult<Link> pageResult = new PageResult<>(totalCount, queryUtil.getLimit(),
+        return new PageResult<>(totalCount, queryUtil.getLimit(),
                 queryUtil.getPage(), linkPage.getRecords());
-        return pageResult;
     }
 
     @Override
     public Map<Integer, List<Link>> getLinksForLinkPage() {
         List<Link> linkList = linkMapper.selectList(null);
-        Map<Integer, List<Link>> linkMap = linkList.stream().collect(Collectors.groupingBy(Link::getLinkType));
-        return linkMap;
+        return linkList.stream().collect(Collectors.groupingBy(Link::getLinkType));
     }
 }
 

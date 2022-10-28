@@ -1,15 +1,18 @@
 package com.study.reproduce.handler.index;
 
+import com.study.reproduce.common.Result;
 import com.study.reproduce.confiig.WebSiteStyleConfig;
 import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.model.domain.Comment;
 import com.study.reproduce.model.domain.Link;
-import com.study.reproduce.model.vo.BlogDetail;
-import com.study.reproduce.model.vo.BlogForDisplay;
+import com.study.reproduce.model.ov.BlogDetail;
+import com.study.reproduce.model.ov.BlogForDisplay;
+import com.study.reproduce.model.ov.BlogInfo;
 import com.study.reproduce.service.*;
 import com.study.reproduce.utils.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+
+import static com.study.reproduce.constant.RedisConstant.VERIFY_CODE;
 
 @Controller
 public class BlogIndexHandler {
@@ -37,6 +42,9 @@ public class BlogIndexHandler {
     WebSiteConfigService webSiteConfigService;
 
     @Resource
+    StringRedisTemplate stringRedisTemplate;
+
+    @Resource
     BlogTagRelationService blogTagRelationService;
 
 
@@ -52,11 +60,10 @@ public class BlogIndexHandler {
      */
     @GetMapping({"/page/{pageNum}"})
     public String page(Model model, @PathVariable("pageNum") int pageNum) {
-        PageResult<BlogForDisplay> blogPageResult = blogService.getBlogsForIndexPage(pageNum);
-        if (blogPageResult == null) {
-            return "error/404";
-        }
-        model.addAttribute("blogPageResult", blogPageResult);
+        PageResult<BlogInfo> pageResult = blogService.queryBlogInfoByPage(pageNum, 9);
+//        PageResult<BlogForDisplay> blogPageResult = blogService.getBlogsForIndexPage(pageNum);
+
+        model.addAttribute("blogPageResult", pageResult);
         model.addAttribute("pageName", "首页");
         setIndexMessage(model);
         return "blog/" + WebSiteStyleConfig.style + "/index";
@@ -70,7 +77,7 @@ public class BlogIndexHandler {
     @GetMapping({"/search/{keyword}/{page}"})
     public String search(Model model, @PathVariable("keyword") String keyword, @PathVariable("page") Integer page) {
         PageQueryUtil queryUtil = new PageQueryUtil(keyword, page);
-        PageResult<Blog> blogPageResult = blogService.queryByPageUtil(queryUtil);
+        PageResult<BlogInfo> blogPageResult = blogService.search(page, keyword);
         model.addAttribute("blogPageResult", blogPageResult);
         model.addAttribute("pageName", "搜索");
         model.addAttribute("pageUrl", "search");
@@ -83,9 +90,10 @@ public class BlogIndexHandler {
     public String detail(HttpServletRequest request,
                          @PathVariable("blogId") Long blogId,
                          @RequestParam(value = "commentPage", defaultValue = "1") Integer commentPage) {
-        BlogDetail blogDetail = blogService.getBlogDetail(blogId);
+        BlogDetail blogDetail = blogService.getBlogDetailFromCache(blogId);
         if (blogDetail != null) {
             request.setAttribute("blogDetailVO", blogDetail);
+//            request.setAttribute("commentPageResult", commentService.getCommentPage(blogId, commentPage));
             request.setAttribute("commentPageResult", commentService.getCommentPage(blogId, commentPage));
         }
         request.setAttribute("pageName", "详情");
@@ -158,7 +166,7 @@ public class BlogIndexHandler {
         if (StringUtils.isBlank(verifyCode)) {
             throw ExceptionGenerator.businessError("验证码不能为空");
         }
-        String captchaCode = request.getSession().getAttribute("verifyCode") + "";
+        String captchaCode = stringRedisTemplate.opsForValue().get(VERIFY_CODE + request.getSession().getId());
         String ref = request.getHeader("Referer");
         if (StringUtils.isAnyBlank(captchaCode, ref)) {
             throw ExceptionGenerator.businessError("非法请求");
@@ -229,9 +237,13 @@ public class BlogIndexHandler {
      * @param model
      */
     public void setIndexMessage(Model model) {
-        model.addAttribute("newBlogs", blogService.getSimpleBlogInfoIndex(1));
-        model.addAttribute("hotBlogs", blogService.getSimpleBlogInfoIndex(0));
-        model.addAttribute("hotTags", blogTagRelationService.getBlogTagCountIndex());
+//        model.addAttribute("newBlogs", blogService.getSimpleBlogInfoIndex(1));
+        model.addAttribute("newBlogs", blogService.getNewBlogsFromCache());
+//        model.addAttribute("hotBlogs", blogService.getSimpleBlogInfoIndex(0));
+        model.addAttribute("hotBlogs", blogService.getHotBlogs());
+//        model.addAttribute("hotTags", blogTagRelationService.getBlogTagCountIndex());
+        model.addAttribute("hotTags", blogTagRelationService.getTagCount());
+//        model.addAttribute("configurations", webSiteConfigService.getAllConfigs());
         model.addAttribute("configurations", webSiteConfigService.getAllConfigs());
     }
 }

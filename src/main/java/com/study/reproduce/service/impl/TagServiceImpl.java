@@ -46,9 +46,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
         wrapper.orderByDesc("tag_id");
         Page<Tag> tagPage = tagMapper.selectPage(page, wrapper);
         Long totalCount = tagMapper.selectCount(null);
-        PageResult<Tag> pageResult = new PageResult<>(totalCount, pageQueryUtil.getLimit(),
+        return new PageResult<>(totalCount, pageQueryUtil.getLimit(),
                 pageQueryUtil.getPage(), tagPage.getRecords());
-        return pageResult;
     }
 
     @Override

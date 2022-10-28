@@ -1,9 +1,9 @@
 package com.study.reproduce.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.study.reproduce.constant.WebSiteConfigId;
 import com.study.reproduce.model.domain.WebSiteConfig;
 import com.study.reproduce.service.AdminService;
+import com.study.reproduce.service.CacheService;
 import com.study.reproduce.service.WebSiteConfigService;
 import com.study.reproduce.mapper.WebSiteConfigMapper;
 import org.springframework.stereotype.Service;
@@ -14,6 +14,9 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static com.study.reproduce.constant.RedisConstant.WEBSITE_CONFIG_KEY;
 
 /**
 * @author 18714
@@ -24,6 +27,8 @@ import java.util.Map;
 public class WebSiteConfigServiceImpl extends ServiceImpl<WebSiteConfigMapper, WebSiteConfig>
     implements WebSiteConfigService{
 
+    @Resource
+    CacheService cacheService;
     @Resource
     WebSiteConfigMapper webSiteConfigMapper;
     @Override
@@ -39,14 +44,22 @@ public class WebSiteConfigServiceImpl extends ServiceImpl<WebSiteConfigMapper, W
         return true;
     }
 
-    @Override
-    public Map<String, String> getAllConfigs() {
+    public Map<String, String> getConfigs(Integer flag) {
         List<WebSiteConfig> configs = webSiteConfigMapper.selectList(null);
         Map<String, String> map = new HashMap<>();
         for (WebSiteConfig config : configs) {
             map.put(config.getConfigName(), config.getConfigValue());
         }
         return map;
+    }
+
+    @Override
+    public Map<?, ?> getAllConfigs() {
+        Map<?, ?> cache = cacheService.getFromCache(WEBSITE_CONFIG_KEY, 1, this::getConfigs, Map.class, 72L, TimeUnit.HOURS);
+        if (cache == null) {
+            return getConfigs(1);
+        }
+        return cache;
     }
 }
 

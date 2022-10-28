@@ -16,4 +16,12 @@
         role_id,role_name,create_time,
         update_time,is_deleted
     </sql>
+    <select id="getRolesByAdminId" resultType="com.study.reproduce.model.domain.Role">
+        select a.role_id,a.role_name,a.create_time,
+               a.update_time,a.is_deleted
+        from tb_admin_role a
+        left join tb_admin_role_relation b
+        on a.role_id = b.role_id
+        where admin_user_id = #{adminId}
+    </select>
 </mapper>

@@ -1,4 +1,4 @@
-package com.study.reproduce.model.vo;
+package com.study.reproduce.model.ov;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

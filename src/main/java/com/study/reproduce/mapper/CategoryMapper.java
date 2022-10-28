@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-05-10 19:48:27
 * @Entity generator.domain.Category
 */
-@Mapper
 public interface CategoryMapper extends BaseMapper<Category> {
 
 }

@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-05-10 20:10:16
 * @Entity generator.domain.Link
 */
-@Mapper
 public interface LinkMapper extends BaseMapper<Link> {
 
 }

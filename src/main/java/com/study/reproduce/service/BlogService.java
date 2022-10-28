@@ -2,9 +2,10 @@ package com.study.reproduce.service;
 
 import com.study.reproduce.model.domain.Blog;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.study.reproduce.model.vo.BlogDetail;
-import com.study.reproduce.model.vo.BlogForDisplay;
-import com.study.reproduce.model.vo.SimpleBlogInfo;
+import com.study.reproduce.model.ov.BlogDetail;
+import com.study.reproduce.model.ov.BlogForDisplay;
+import com.study.reproduce.model.ov.BlogInfo;
+import com.study.reproduce.model.ov.SimpleBlogInfo;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
 
@@ -44,7 +45,7 @@ public interface BlogService extends IService<Blog> {
      * @param ids 需要删除的 id
      * @return 删除结果
      */
-    boolean deleteBlogs(List<Integer> ids);
+    boolean deleteBlogs(List<Long> ids);
 
     /**
      * 获取简单的博客信息，用于主页展示
@@ -67,6 +68,8 @@ public interface BlogService extends IService<Blog> {
      */
     BlogDetail getBlogDetail(Long blogId);
 
+    BlogDetail getBlogDetailFromCache(Long blogId);
+
     /**
      * 根据属性名来查询对应的文章
      * @param typeName 对应名称
@@ -82,4 +85,12 @@ public interface BlogService extends IService<Blog> {
      * @return 查询结果
      */
     BlogForDisplay getBlogDetailBySubUrl(String subUrl);
+
+    PageResult<BlogInfo> queryBlogInfoByPage(Integer currentPage, Integer pageSize);
+
+    List<?> getNewBlogsFromCache();
+
+    List<?> getHotBlogs();
+
+    PageResult<BlogInfo> search(Integer page, String keyword);
 }

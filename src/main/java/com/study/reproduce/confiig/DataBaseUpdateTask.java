@@ -1,4 +1,4 @@
-package com.study.reproduce.schedule;
+package com.study.reproduce.confiig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 @Configuration    //标识配置类
 @EnableScheduling //开启定时任务
-public class DataBaseUpdateScheduleTask {
+public class DataBaseUpdateTask {
 
     //每天中文 12 点触发
     @Scheduled(cron = "0 0 12 * * ?")

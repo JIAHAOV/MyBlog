@@ -1,16 +1,15 @@
 package com.study.reproduce.handler.admin;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Tag;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.TagService;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
-import com.study.reproduce.utils.Result;
+import com.study.reproduce.common.Result;
 import com.study.reproduce.utils.ResultGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,7 +23,7 @@ public class TagHandler {
     TagService tagService;
 
     @GetMapping("/tags/list")
-    public Result list(PageParam pageParam) {
+    public Result<?> list(PageParam pageParam) {
         if (pageParam.getPage() == null || pageParam.getLimit() == null) {
             throw ExceptionGenerator.businessError("参数错误");
         }
@@ -33,9 +32,9 @@ public class TagHandler {
         return ResultGenerator.getSuccessResult(pageResult);
     }
 
+    @SaCheckRole("admin")
     @PostMapping("/tags/save")
-    @PreAuthorize("hasAnyRole('admin', 'user')")
-    public Result save(String tagName) {
+    public Result<?> save(String tagName) {
         if (tagName.isEmpty()) {
             throw ExceptionGenerator.businessError("参数错误");
         }
@@ -47,8 +46,7 @@ public class TagHandler {
     }
 
     @PostMapping("/tags/delete")
-    @PreAuthorize("hasAnyRole('admin', 'user')")
-    public Result delete(@RequestBody Integer[] ids) {
+    public Result<?> delete(@RequestBody Integer[] ids) {
         if (ids.length == 0) {
             throw ExceptionGenerator.businessError("参数错误");
         }

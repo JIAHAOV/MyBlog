@@ -15,7 +15,7 @@
         relation_id,blog_id,tag_id,
         create_time
     </sql>
-    <select id="getBlogTagCount" resultType="com.study.reproduce.model.vo.BlogTagCount">
+    <select id="getBlogTagCount" resultType="com.study.reproduce.model.ov.BlogTagCount">
         SELECT
             relation.tag_id,
             count( relation.tag_id ) as tag_count,

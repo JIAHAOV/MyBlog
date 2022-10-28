@@ -2,7 +2,7 @@ package com.study.reproduce.mapper;
 
 import com.study.reproduce.model.domain.Blog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.study.reproduce.model.vo.SimpleBlogInfo;
+import com.study.reproduce.model.ov.SimpleBlogInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,7 +14,6 @@ import java.util.List;
 * @createDate 2022-05-10 19:47:52
 * @Entity generator.domain.Blog
 */
-@Mapper
 public interface BlogMapper extends BaseMapper<Blog> {
 
     /**

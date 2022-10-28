@@ -1,12 +1,11 @@
 package com.study.reproduce.handler.admin;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.study.reproduce.model.domain.Admin;
-import com.study.reproduce.model.domain.AdminDetails;
 import com.study.reproduce.model.request.AdminLoginData;
 import com.study.reproduce.service.*;
 import com.study.reproduce.utils.PatternUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,7 +20,7 @@ public class AdminHandler {
     @Resource
     AdminService adminService;
 
-//    @PostMapping("/login")
+    @PostMapping("/login")
     public void login(AdminLoginData loginData, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String account = loginData.getAccount();
         String password = loginData.getPassword();
@@ -37,6 +36,11 @@ public class AdminHandler {
                 response.sendRedirect(request.getContextPath() + "/admin/index");
             }
         }
+    }
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        StpUtil.logout();
+        response.sendRedirect(request.getContextPath() + "/admin/login");
     }
 
     @PostMapping("/profile/password")
@@ -60,10 +64,6 @@ public class AdminHandler {
 
     /**
      * 修改名称
-     * @param request
-     * @param loginUserName
-     * @param nickName
-     * @return
      */
     @PostMapping("/profile/name")
     public String nameUpdate(HttpServletRequest request, String loginUserName, String nickName) {
@@ -90,12 +90,6 @@ public class AdminHandler {
      * @return id
      */
     public Integer getAdminUserId(HttpServletRequest request) {
-        String username = (String) request.getSession().getAttribute(AdminService.GET_ADMIN_KEY);
-        if (username == null) {
-            return null;
-        }
-        AdminDetails adminDetails = (AdminDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Admin admin = adminService.getAdminByUsername(adminDetails.getUsername());
-        return admin != null ? admin.getAdminUserId() : null;
+        return null;
     }
 }

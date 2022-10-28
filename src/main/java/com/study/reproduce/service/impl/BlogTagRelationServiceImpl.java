@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Blog;
-import com.study.reproduce.model.vo.BlogTagCount;
+import com.study.reproduce.model.ov.BlogTagCount;
 import com.study.reproduce.model.domain.BlogTagRelation;
 import com.study.reproduce.model.domain.Tag;
 import com.study.reproduce.service.BlogTagRelationService;
 import com.study.reproduce.mapper.BlogTagRelationMapper;
+import com.study.reproduce.service.CacheService;
 import com.study.reproduce.service.TagService;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.study.reproduce.constant.RedisConstant.HOT_TAGS_KEY;
 
 /**
 * @author 18714
@@ -28,6 +32,9 @@ public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMappe
 
     @Resource
     TagService tagService;
+
+    @Resource
+    CacheService cacheService;
 
     @Resource
     BlogTagRelationMapper blogTagRelationMapper;
@@ -66,15 +73,21 @@ public class BlogTagRelationServiceImpl extends ServiceImpl<BlogTagRelationMappe
         //先移除之前的关系
         this.remove(wrapper);
         //更新关系
-        if (this.saveBatch(relations)) {
-            return true;
-        }
-        return false;
+        return this.saveBatch(relations);
     }
 
     @Override
-    public List<BlogTagCount> getBlogTagCountIndex() {
+    public List<BlogTagCount> getBlogTagCountIndex(Integer temp) {
         return blogTagRelationMapper.getBlogTagCount();
+    }
+
+    @Override
+    public List<?> getTagCount() {
+        List<?> cache = cacheService.getFromCache(HOT_TAGS_KEY, 1, this::getBlogTagCountIndex, List.class, 24L, TimeUnit.HOURS);
+        if (cache == null) {
+            return this.getBlogTagCountIndex(1);
+        }
+        return cache;
     }
 }
 

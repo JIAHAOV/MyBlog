@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-05-09 21:44:56
 * @Entity generator.domain.Admin
 */
-@Mapper
 public interface AdminMapper extends BaseMapper<Admin> {
 
 }

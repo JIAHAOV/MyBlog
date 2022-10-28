@@ -1,7 +1,7 @@
 package com.study.reproduce.service;
 
 import com.study.reproduce.model.domain.Blog;
-import com.study.reproduce.model.vo.BlogTagCount;
+import com.study.reproduce.model.ov.BlogTagCount;
 import com.study.reproduce.model.domain.BlogTagRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -25,5 +25,7 @@ public interface BlogTagRelationService extends IService<BlogTagRelation> {
      * 获取每个标签在所有博客中的个数
      * @return 查询结果
      */
-    List<BlogTagCount> getBlogTagCountIndex();
+    List<BlogTagCount> getBlogTagCountIndex(Integer temp);
+
+    List<?> getTagCount();
 }

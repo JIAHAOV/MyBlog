@@ -1,23 +1,30 @@
 package com.study.reproduce.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.study.reproduce.listener.event.ReplyCommentEvent;
 import com.study.reproduce.model.domain.Comment;
 import com.study.reproduce.mapper.CommentMapper;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.CommentService;
 import com.study.reproduce.service.SendMailService;
 import com.study.reproduce.utils.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.study.reproduce.constant.MailConstant.REPLY_TEMPLATE;
+import static com.study.reproduce.constant.MailConstant.REPLY_TITLE;
 
 /**
 * @author 18714
@@ -28,16 +35,11 @@ import java.util.List;
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     implements CommentService {
 
-    @Resource
-    CommentMapper commentMapper;
+    @Autowired
+    private CommentMapper commentMapper;
 
-    @Resource
-    private SendMailService sendMailService;
-
-    private final String REPLY_TEMPLATE = "亲爱的{}:\n" +
-            "<br>\n" +
-            "你在 <a href=\"http://custom-cloud.xyz/blog/{}\">链接</a> 的评论，已被回复: \"{}\"";
-    private final String REPLY_TITLE = "网站回复";
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     @Override
     public PageResult<Comment> queryByPage(PageParam pageParam) {
@@ -81,28 +83,24 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
 
         int update = commentMapper.update(comment, updateWrapper);
 
-        sendMail(comment, replayMessage);
+        publisher.publishEvent(new ReplyCommentEvent(comment));
 
         return update > 0;
     }
 
     @Override
     public PageResult<Comment> getCommentPage(Long blogId, Integer page) {
-        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
         Page<Comment> commentPage = new Page<>(page, 8);
-        wrapper.eq("blog_id", blogId)
-                .eq("comment_status", 1);
-        Long totalCount = commentMapper.selectCount(wrapper);
+        wrapper.eq(Comment::getBlogId, blogId)
+                .eq(Comment::getCommentStatus, 1);
+
         Page<Comment> selectPage = commentMapper.selectPage(commentPage, wrapper);
+        long totalCount = selectPage.getTotal();
         return new PageResult<>(totalCount, 8,
                 page, selectPage.getRecords());
     }
 
-    @Async
-    public void sendMail(Comment comment, String replayMessage) {
-        String mailMessage = StrUtil.format(REPLY_TEMPLATE, comment.getCommentator(), comment.getBlogId(), replayMessage);
-        sendMailService.sendHtmlMessage(comment.getEmail(), REPLY_TITLE, mailMessage);
-    }
 }
 
 

@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-05-10 19:48:27
 * @Entity generator.domain.Comment
 */
-@Mapper
 public interface CommentMapper extends BaseMapper<Comment> {
 
 }

@@ -1,8 +1,13 @@
 package com.study.reproduce.service.impl;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,26 +16,30 @@ import com.study.reproduce.mapper.CategoryMapper;
 import com.study.reproduce.mapper.CommentMapper;
 import com.study.reproduce.model.domain.*;
 import com.study.reproduce.mapper.BlogMapper;
-import com.study.reproduce.model.vo.BlogDetail;
-import com.study.reproduce.model.vo.BlogForDisplay;
-import com.study.reproduce.model.vo.SimpleBlogInfo;
+import com.study.reproduce.model.ov.*;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.service.BlogTagRelationService;
+import com.study.reproduce.service.CacheService;
 import com.study.reproduce.utils.MakeDownUtil;
 import com.study.reproduce.utils.PageQueryUtil;
 import com.study.reproduce.utils.PageResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
+import static com.study.reproduce.constant.RedisConstant.*;
 
 /**
 * @author 18714
 * @description 针对表【tb_blog】的数据库操作Service实现
 * @createDate 2022-05-10 19:47:52
 */
+@Slf4j
 @Service
 public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     implements BlogService {
@@ -45,21 +54,24 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Resource
     CategoryMapper categoryMapper;
     @Resource
+    CacheService cacheService;
+    @Resource
     StringRedisTemplate stringRedisTemplate;
     @Resource
+    ElasticSearchService elasticSearchService;
+    @Resource
     BlogTagRelationService blogTagRelationService;
-
 
     @Override
     public PageResult<Blog> queryByPageUtil(PageQueryUtil queryUtil) {
         Page<Blog> page = new Page<>(queryUtil.getPage(), queryUtil.getLimit());
 //        page.addOrder(OrderItem.desc("blog_id"));
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<Blog> wrapper = new LambdaQueryWrapper<>();
         if (queryUtil.getKeyword() != null) {
-            wrapper.like("blog_category_name", queryUtil.getKeyword())
-                    .or().like("blog_title", queryUtil.getKeyword());
+            wrapper.like(Blog::getBlogCategoryName, queryUtil.getKeyword())
+                    .or().like(Blog::getBlogTitle, queryUtil.getKeyword());
         }
-        wrapper.orderByDesc("blog_id");//或者使用 wrapper 进行排序
+        wrapper.orderByDesc(Blog::getBlogId);//或者使用 wrapper 进行排序
         Page<Blog> selectPage = blogMapper.selectPage(page, wrapper);
         Long count = blogMapper.selectCount(wrapper);
         return new PageResult<>(count, queryUtil.getLimit(), queryUtil.getPage(), selectPage.getRecords());
@@ -68,7 +80,6 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
     @Override
     @Transactional
     public boolean saveBlog(Blog blog) {
-        blog.setCreateTime(LocalDateTime.now());
         //为文章设置种类名称
         Category category = categoryMapper.selectById(blog.getBlogCategoryId());
         if (category == null) {
@@ -84,7 +95,26 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             throw ExceptionGenerator.businessError("更新失败");
         }
         //同步标签和博客之间的关系
-        return blogTagRelationService.updateBlogTagRelation(blog);
+        boolean result = blogTagRelationService.updateBlogTagRelation(blog);
+        //更新缓存
+        updateBlogCache(blog);
+        saveBlog2Es(blog);
+        return true;
+    }
+
+    private void updateBlogCache(Blog blog) {
+        if (blog.getBlogStatus().equals(0)) {
+            return;
+        }
+        //更新用于分页查询的数据
+        String key = BLOG_KEY + "list";
+        BlogInfo blogInfo = BeanUtil.copyProperties(blog, BlogInfo.class);
+        String jsonStr = JSONUtil.toJsonStr(blogInfo);
+        stringRedisTemplate.opsForZSet().removeRangeByScore(key, blogInfo.getBlogId(), blogInfo.getBlogId());
+        stringRedisTemplate.opsForZSet().addIfAbsent(key, jsonStr, blogInfo.getBlogId());
+        //删除最新博客列表
+        stringRedisTemplate.delete(NEW_BLOG_KEY);
+        stringRedisTemplate.delete(HOT_TAGS_KEY);
     }
 
     @Override
@@ -105,12 +135,41 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         if (!oldBlog.getBlogTags().equals(blog.getBlogTags())) {
             return blogTagRelationService.updateBlogTagRelation(blog);
         }
+        updateBlogCache(blog);
+        saveBlog2Es(blog);
         return true;
+    }
+
+    @Async
+    void saveBlog2Es(Blog blog) {
+        try {
+            boolean result = elasticSearchService.updateBlog(blog);
+            if (result) {
+                log.info("update blog info to es, id is {}", blog.getBlogId());
+            } else {
+                log.warn("update blog info failed, id is {}", blog.getBlogId());
+            }
+        } catch (IOException e) {
+            log.warn("update blog info failed, id is {}", blog.getBlogId());
+        }
+    }
+    @Async
+    void deleteBlog2Es(List<Long> ids) {
+        try {
+            boolean result = elasticSearchService.deleteBlog(ids);
+            if (result) {
+                log.info("delete blog info form es, id is {}", ids);
+            } else {
+                log.warn("delete blog info failed, id is {}", ids);
+            }
+        } catch (IOException e) {
+            log.warn("delete blog info failed, id is {}", ids);
+        }
     }
 
     @Override
     @Transactional
-    public boolean deleteBlogs(List<Integer> ids) {
+    public boolean deleteBlogs(List<Long> ids) {
         QueryWrapper<BlogTagRelation> wrapper = new QueryWrapper<>();
         wrapper.in("blog_id", ids);
         if (blogTagRelationService.count(wrapper) > 0) {
@@ -118,7 +177,23 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
                 return false;
             }
         }
-        return this.removeByIds(ids);
+        boolean result = this.removeByIds(ids);
+        if (!result) {
+            return false;
+        }
+        deleteBlogCache(ids);
+        deleteBlog2Es(ids);
+        return true;
+    }
+
+    private void deleteBlogCache(List<Long> ids) {
+        String key = BLOG_KEY + "list";
+        for (Long id : ids) {
+            stringRedisTemplate.opsForZSet().removeRangeByScore(key, id, id);
+        }
+        stringRedisTemplate.delete(HOT_BLOG_KEY);
+        stringRedisTemplate.delete(HOT_TAGS_KEY);
+        stringRedisTemplate.delete(NEW_BLOG_KEY);
     }
 
     @Override
@@ -158,15 +233,12 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             displays.add(blogForDisplay);
         }
         Long totalCount = blogMapper.selectCount(queryWrapper);
-        PageResult<BlogForDisplay> pageResult = new PageResult<>(totalCount, SIZE, page, displays);
-        return pageResult;
+        return new PageResult<>(totalCount, SIZE, page, displays);
     }
 
     @Override
     public BlogDetail getBlogDetail(Long blogId) {
         Blog blog = blogMapper.selectById(blogId);
-        blog.setBlogViews(blog.getBlogViews() + 1);
-        blogMapper.updateById(blog);
         BlogDetail blogDetail = new BlogDetail();
         BeanUtils.copyProperties(blog, blogDetail);
         //设置标签
@@ -187,6 +259,19 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         wrapper.eq("blog_id", blogId);
         Long blogCommentCount = commentMapper.selectCount(wrapper);
         blogDetail.setCommentCount(blogCommentCount);
+        return blogDetail;
+    }
+
+    @Override
+    public BlogDetail getBlogDetailFromCache(Long blogId) {
+        BlogDetail blogDetail = cacheService.getFromCache(BLOG_KEY, blogId, this::getBlogDetail, BlogDetail.class, 24L, TimeUnit.HOURS);
+        Long view = cacheService.incrementView(blogId);
+        if (blogDetail == null) {
+            BlogDetail detail = getBlogDetail(blogId);
+            detail.setBlogViews(view);
+            return detail;
+        }
+        blogDetail.setBlogViews(view);
         return blogDetail;
     }
 
@@ -214,7 +299,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         BlogForDisplay blogForDisplay = new BlogForDisplay();
         Blog blog = blogMapper.selectOne(wrapper);
         if (blog == null) {
-            throw ExceptionGenerator.pageNotFound("资源不存在");
+            throw ExceptionGenerator.businessError("资源不存在");
         }
         BeanUtils.copyProperties(blog, blogForDisplay);
         if (blog.getBlogCategoryId() == 0) {
@@ -224,6 +309,36 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
             blogForDisplay.setBlogCategoryIcon(category.getCategoryIcon());
         }
         return blogForDisplay;
+    }
+
+    @Override
+    public PageResult<BlogInfo> queryBlogInfoByPage(Integer currentPage, Integer pageSize) {
+        return cacheService.queryPageResult(BLOG_KEY + "list", currentPage, pageSize,
+                BlogInfo.class, (o1, o2) -> Math.toIntExact(o2.getBlogId() - o1.getBlogId()));
+    }
+
+    @Override
+    public List<?> getNewBlogsFromCache() {
+        List<?> cache = cacheService.getFromCache(NEW_BLOG_KEY, 1, this::getSimpleBlogInfoIndex, List.class, 5L, TimeUnit.HOURS);
+        if (cache == null) {
+            return getSimpleBlogInfoIndex(1);
+        }
+        return cache;
+    }
+
+    @Override
+    public List<?> getHotBlogs() {
+        List<?> cache = cacheService.getFromCache(HOT_BLOG_KEY, 0, this::getSimpleBlogInfoIndex, List.class, 5L, TimeUnit.MINUTES);
+        if (cache == null) {
+            return getSimpleBlogInfoIndex(0);
+        }
+        return cache;
+    }
+
+    @Override
+    public PageResult<BlogInfo> search(Integer page, String keyword) {
+        keyword = keyword.toLowerCase(Locale.ENGLISH);
+        return elasticSearchService.search(page, keyword);
     }
 }
 

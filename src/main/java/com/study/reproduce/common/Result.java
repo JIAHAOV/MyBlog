@@ -1,4 +1,4 @@
-package com.study.reproduce.utils;
+package com.study.reproduce.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

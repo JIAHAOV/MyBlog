@@ -2,6 +2,9 @@ package com.study.reproduce.mapper;
 
 import com.study.reproduce.model.domain.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author 18714
@@ -11,6 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface RoleMapper extends BaseMapper<Role> {
 
+    List<Role> getRolesByAdminId(@Param("adminId") Long adminId);
 }
 
 

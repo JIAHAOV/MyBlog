@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-05-10 19:48:27
 * @Entity generator.domain.Tag
 */
-@Mapper
 public interface TagMapper extends BaseMapper<Tag> {
 
 }

@@ -25,5 +25,5 @@ public interface WebSiteConfigService extends IService<WebSiteConfig> {
      * 获取所有的配置
      * @return 查询结果
      */
-    Map<String, String> getAllConfigs();
+    Map<?, ?> getAllConfigs();
 }

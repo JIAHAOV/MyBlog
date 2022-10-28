@@ -1,5 +1,7 @@
 package com.study.reproduce.utils;
 
+import com.study.reproduce.common.Result;
+
 /**
  * 快速获取 Result
  */

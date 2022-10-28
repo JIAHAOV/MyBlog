@@ -1,5 +1,6 @@
 package com.study.reproduce.handler.admin;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.study.reproduce.confiig.WebSiteStyleConfig;
 import com.study.reproduce.constant.WebSiteConfigId;
 import com.study.reproduce.model.domain.WebSiteConfig;
@@ -7,10 +8,8 @@ import com.study.reproduce.model.request.FooterInfoParam;
 import com.study.reproduce.model.request.UserInfoParam;
 import com.study.reproduce.model.request.WebsiteInfoParam;
 import com.study.reproduce.service.WebSiteConfigService;
-import com.study.reproduce.utils.Result;
+import com.study.reproduce.common.Result;
 import com.study.reproduce.utils.ResultGenerator;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,9 +22,9 @@ public class WebSiteConfigHandler {
     @Resource
     WebSiteConfigService webSiteConfigService;
 
+    @SaCheckRole("admin")
     @PostMapping("/configurations/website")
-    @PreAuthorize("hasAnyRole('admin')")
-    public Result website(WebsiteInfoParam websiteInfoParam) {
+    public Result<?> website(WebsiteInfoParam websiteInfoParam) {
         ArrayList<WebSiteConfig> webSiteConfigs = new ArrayList<>();
         if (!websiteInfoParam.getWebsiteDescription().isEmpty()) {
             WebSiteConfig webSiteConfig = new WebSiteConfig();
@@ -66,9 +65,9 @@ public class WebSiteConfigHandler {
         }
     }
 
+    @SaCheckRole("admin")
     @PostMapping("/configurations/userInfo")
-    @PreAuthorize("hasAnyRole('admin')")
-    public Result userInfo(UserInfoParam userInfoParam) {
+    public Result<?> userInfo(UserInfoParam userInfoParam) {
         ArrayList<WebSiteConfig> webSiteConfigs = new ArrayList<>();
         if (!userInfoParam.getYourEmail().isEmpty()) {
             WebSiteConfig webSiteConfig = new WebSiteConfig();
@@ -96,9 +95,9 @@ public class WebSiteConfigHandler {
         }
     }
 
+    @SaCheckRole("admin")
     @PostMapping("/configurations/footer")
-    @PreAuthorize("hasAnyRole('admin')")
-    public Result footer(FooterInfoParam footerInfoParam) {
+    public Result<?> footer(FooterInfoParam footerInfoParam) {
         ArrayList<WebSiteConfig> webSiteConfigs = new ArrayList<>();
         if (!footerInfoParam.getFooterAbout().isEmpty()) {
             WebSiteConfig webSiteConfig = new WebSiteConfig();

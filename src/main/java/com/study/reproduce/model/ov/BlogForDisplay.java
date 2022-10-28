@@ -1,4 +1,4 @@
-package com.study.reproduce.model.vo;
+package com.study.reproduce.model.ov;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

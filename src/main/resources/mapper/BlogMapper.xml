@@ -28,7 +28,7 @@
         blog_views,enable_comment,is_deleted,
         create_time,update_time
     </sql>
-    <select id="getSimpleBlogInfo" resultType="com.study.reproduce.model.vo.SimpleBlogInfo">
+    <select id="getSimpleBlogInfo" resultType="com.study.reproduce.model.ov.SimpleBlogInfo">
         SELECT
             blog_id,
             blog_title

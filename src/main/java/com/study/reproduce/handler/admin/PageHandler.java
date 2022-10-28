@@ -1,12 +1,9 @@
 package com.study.reproduce.handler.admin;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.study.reproduce.model.domain.Admin;
-import com.study.reproduce.model.domain.AdminDetails;
 import com.study.reproduce.model.domain.Blog;
 import com.study.reproduce.service.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,12 +75,11 @@ public class PageHandler {
 
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
-        AdminDetails adminDetails = (AdminDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Admin admin = adminService.getById(adminDetails.getAdminUserId());
-        if (admin != null) {
-            model.addAttribute("loginUserName", admin.getLoginUserName());
-            model.addAttribute("nickName", admin.getNickName());
-        }
+        //获取当前用户信息
+        Long id = (Long)StpUtil.getLoginId();
+        Admin admin = adminService.getById(id);
+        model.addAttribute("loginUserName", admin.getLoginUserName());
+        model.addAttribute("nickName", admin.getNickName());
         model.addAttribute("path", "admin/links");
         return "admin/profile";
     }

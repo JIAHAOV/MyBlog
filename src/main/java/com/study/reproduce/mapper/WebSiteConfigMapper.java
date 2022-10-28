@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-05-10 22:10:02
 * @Entity generator.domain.WebSiteConfig
 */
-@Mapper
 public interface WebSiteConfigMapper extends BaseMapper<WebSiteConfig> {
 
 }

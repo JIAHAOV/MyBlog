@@ -2,7 +2,6 @@ package com.study.reproduce.service;
 
 import com.study.reproduce.model.domain.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpSession;
 

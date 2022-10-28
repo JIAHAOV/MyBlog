@@ -2,6 +2,10 @@ package com.study.reproduce.mapper;
 
 import com.study.reproduce.model.domain.AdminRoleRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.study.reproduce.model.domain.Role;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author 18714

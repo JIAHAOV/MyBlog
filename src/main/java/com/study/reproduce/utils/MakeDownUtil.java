@@ -28,8 +28,7 @@ public class MakeDownUtil {
         //创建html渲染器
         HtmlRenderer renderer = HtmlRenderer.builder().build();
         //将节点树呈现为HTML。
-        String html = renderer.render(document);
-        return html;
+        return renderer.render(document);
     }
     /**
      * markdown格式转换成HTML格式

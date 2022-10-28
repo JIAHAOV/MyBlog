@@ -1,26 +1,17 @@
 package com.study.reproduce.handler.admin;
 
+import com.study.reproduce.common.Result;
 import com.study.reproduce.constant.BlogConstant;
 import com.study.reproduce.exception.ExceptionGenerator;
 import com.study.reproduce.model.domain.Blog;
+import com.study.reproduce.model.ov.BlogInfo;
 import com.study.reproduce.model.request.PageParam;
 import com.study.reproduce.service.BlogService;
 import com.study.reproduce.utils.*;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -31,8 +22,11 @@ public class BlogHandler {
     @Resource
     BlogService blogService;
 
+    /**
+     * 分页获取文章简略信息
+     */
     @GetMapping("/blogs/list")
-    public Result list(PageParam pageParam) {
+    public Result<PageResult<Blog>> list(PageParam pageParam) {
         if (pageParam.getPage() == null || pageParam.getLimit() == null) {
             throw ExceptionGenerator.businessError("参数错误");
         }
@@ -41,9 +35,11 @@ public class BlogHandler {
         return ResultGenerator.getSuccessResult(pageResult);
     }
 
+    /**
+     * 新增
+     */
     @PostMapping("/blogs/save")
-    @PreAuthorize("hasAnyRole('admin', 'user')")
-    public Result save(Blog blog) {
+    public Result<?> save(Blog blog) {
         checkBlogInfo(blog);
         if (blogService.saveBlog(blog)) {
             return ResultGenerator.getSuccessResult("添加成功");
@@ -52,9 +48,11 @@ public class BlogHandler {
         }
     }
 
+    /**
+     * 更新
+     */
     @PostMapping("/blogs/update")
-    @PreAuthorize("hasAnyRole('admin', 'user')")
-    public Result update(Blog blog) {
+    public Result<?> update(Blog blog) {
         checkBlogInfo(blog);
         if (blogService.updateBlog(blog)) {
             return ResultGenerator.getSuccessResult("更新成功");
@@ -63,10 +61,12 @@ public class BlogHandler {
         }
     }
 
+    /**
+     * 删除
+     */
     @PostMapping("/blogs/delete")
-    @PreAuthorize("hasAnyRole('admin', 'user')")
-    public Result delete(@RequestBody List<Integer> ids) {
-        if (ids == null || ids.size() <= 0) {
+    public Result<?> delete(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
             throw ExceptionGenerator.businessError("参数异常");
         }
         boolean result = blogService.deleteBlogs(ids);
@@ -77,34 +77,9 @@ public class BlogHandler {
         }
     }
 
-    @PostMapping("/blogs/md/uploadfile")
-//    @PreAuthorize("hasAnyRole('admin', 'user')")
-    public void uploadFileByEditorMd(@RequestParam(name = "editormd-image-file") MultipartFile multipartFile,
-                                     HttpServletRequest request,
-                                     HttpServletResponse response) throws IOException {
-        File file = FileUtil.getUploadFile(BlogHandler.class, multipartFile);
-        System.out.println(file.getAbsolutePath());
-        PrintWriter writer = response.getWriter();
-        try {
-            //上传文件
-            multipartFile.transferTo(file);
-            request.setCharacterEncoding("utf-8");
-            response.setHeader("Content-Type", "text/html");
-            String url = request.getRequestURL().toString();
-            //回复
-            URI uri = URIUtil.getResponseURI(new URI(url), file.getName());
-            writer.write("{\"success\": 1, \"message\":\"success\",\"url\":\"" + uri + "\"}");
-            writer.flush();
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            writer.write("{\"success\":0}");
-            writer.flush();
-            writer.close();
-            throw new RuntimeException("上传错误");
-        }
-    }
-
+    /**
+     * 检查文章内容是否合法
+     */
     public void checkBlogInfo(Blog blog) {
         if (blog.getBlogTitle().isEmpty()) {
             throw ExceptionGenerator.businessError("标题不能为空");
